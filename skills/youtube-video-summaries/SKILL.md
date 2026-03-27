@@ -1,0 +1,527 @@
+---
+name: youtube-video-summaries
+description: Extract YouTube transcripts, summaries, scene descriptions, and social media clips using Google Gemini API. Customize prompts for versatile content analysis.
+---
+
+# YouTube Video Summaries & Transcripts
+
+## Overview
+
+Extracts and analyzes YouTube video content using transcripts and Google Gemini API. Generates comprehensive summaries, scene-by-scene descriptions, key quotes, timestamps, and social media-ready clips for content repurposing.
+
+## When to Use
+
+- User wants a quick summary of a long YouTube video
+- User needs transcript extraction for analysis
+- User wants to create social media clips from videos
+- User needs scene descriptions or key timestamps
+- User wants to analyze video content without watching
+
+## Features
+
+- **Transcript Extraction**: Get full video transcripts with timestamps
+- **AI Summaries**: Gemini-powered comprehensive summaries
+- **Scene Detection**: Break down videos into key scenes
+- **Key Quotes**: Extract memorable quotes with timestamps
+- **Social Clips**: Suggest optimal clip segments for TikTok/Shorts
+- **Custom Prompts**: Flexible analysis with custom AI prompts
+- **Batch Processing**: Process multiple videos at once
+
+## Quick Start
+
+### Setup
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Set environment variables
+export GOOGLE_GEMINI_API_KEY="your-api-key"
+```
+
+Get your API key from: https://makersuite.google.com/app/apikey
+
+## Usage
+
+### Basic Summary
+
+```bash
+# Summarize a video
+python scripts/youtube_summary.py summarize "https://www.youtube.com/watch?v=VIDEO_ID"
+
+# With specific output
+python scripts/youtube_summary.py summarize VIDEO_ID \
+  --output summary.md \
+  --format markdown
+```
+
+### Extract Transcript
+
+```bash
+# Get full transcript
+python scripts/youtube_summary.py transcript VIDEO_ID
+
+# With timestamps
+python scripts/youtube_summary.py transcript VIDEO_ID \
+  --timestamps \
+  --output transcript.txt
+
+# VTT format (for subtitles)
+python scripts/youtube_summary.py transcript VIDEO_ID \
+  --format vtt \
+  --output subtitles.vtt
+```
+
+### Scene Analysis
+
+```bash
+# Break down into scenes
+python scripts/youtube_summary.py scenes VIDEO_ID \
+  --output scenes.json
+
+# With scene descriptions
+python scripts/youtube_summary.py scenes VIDEO_ID \
+  --descriptions \
+  --output scenes.md
+```
+
+### Social Media Clips
+
+```bash
+# Suggest TikTok/Shorts clips
+python scripts/youtube_summary.py clips VIDEO_ID \
+  --duration 60 \
+  --count 5 \
+  --output clips.json
+
+# With captions
+python scripts/youtube_summary.py clips VIDEO_ID \
+  --duration 30 \
+  --include-captions \
+  --output viral-clips.md
+```
+
+### Custom Analysis
+
+```bash
+# Custom AI prompt
+python scripts/youtube_summary.py analyze VIDEO_ID \
+  --prompt "Extract all technical terms and explain them" \
+  --output analysis.md
+
+# Multiple prompts
+python scripts/youtube_summary.py analyze VIDEO_ID \
+  --prompt "Summarize main points" \
+  --prompt "List action items" \
+  --prompt "Identify key statistics" \
+  --output full-analysis.md
+```
+
+### Batch Processing
+
+```bash
+# Process playlist
+python scripts/youtube_summary.py batch \
+  --playlist PLAYLIST_ID \
+  --action summarize \
+  --output summaries/
+
+# Process from file
+python scripts/youtube_summary.py batch \
+  --file video_urls.txt \
+  --action transcript \
+  --output transcripts/
+```
+
+## Output Formats
+
+### Summary Output
+
+```markdown
+# Video Summary
+
+**Title:** How to Build a SaaS in 2024
+**Channel:** Tech Entrepreneur
+**Duration:** 45:23
+**Views:** 125K
+**Published:** March 15, 2024
+
+## Quick Summary (TL;DR)
+
+This video covers the complete process of building a SaaS product in 2024,
+including tech stack selection, MVP development, and go-to-market strategy.
+
+## Key Points
+
+1. **Tech Stack Selection (0:00 - 5:30)**
+   - Modern frameworks: Next.js, React, TailwindCSS
+   - Backend: Node.js, PostgreSQL, Redis
+   - Deployment: Vercel, AWS
+
+2. **MVP Development (5:30 - 20:15)**
+   - Focus on core features
+   - Build authentication first
+   - Implement payment early
+
+3. **Go-to-Market (20:15 - 35:00)**
+   - Content marketing strategy
+   - Community building
+   - Early adopter outreach
+
+## Key Quotes
+
+> "Your MVP should solve one problem extremely well, not ten problems poorly."
+> - Timestamp: 12:45
+
+> "The best time to implement payments is day one, not after you have users."
+> - Timestamp: 18:30
+
+## Action Items
+
+- [ ] Choose tech stack based on team expertise
+- [ ] Build core feature first
+- [ ] Set up analytics from day one
+- [ ] Start content creation early
+
+## Resources Mentioned
+
+- Next.js documentation: https://nextjs.org
+- Stripe integration guide: https://stripe.com/docs
+- Launch checklist: [link]
+
+## Recommended For
+
+- Aspiring SaaS founders
+- Software engineers
+- Product managers
+
+---
+
+*Generated by YouTube Summary Tool using Google Gemini*
+```
+
+### Clip Suggestions Output
+
+```json
+{
+  "video_id": "dQw4w9WgXcQ",
+  "title": "How to Build a SaaS in 2024",
+  "clips": [
+    {
+      "number": 1,
+      "start": "00:12:30",
+      "end": "00:13:30",
+      "duration": 60,
+      "title": "The MVP Golden Rule",
+      "description": "Explains why your MVP should solve one problem really well",
+      "hook": "Your MVP should solve one problem extremely well",
+      "virality_score": 8.5,
+      "platforms": ["TikTok", "YouTube Shorts", "Instagram Reels"],
+      "suggested_caption": "🚀 The ONE rule for building a successful MVP #saas #startup #mvp"
+    },
+    {
+      "number": 2,
+      "start": "00:18:15",
+      "end": "00:19:00",
+      "duration": 45,
+      "title": "When to Add Payments",
+      "description": "Controversial take on when to implement payment systems",
+      "hook": "The best time to add payments is day one",
+      "virality_score": 7.8,
+      "platforms": ["Twitter", "LinkedIn", "TikTok"],
+      "suggested_caption": "💰 Most founders get this wrong about payments #startup"
+    }
+  ]
+}
+```
+
+## Code Examples
+
+### Python - Basic Usage
+
+```python
+from youtube_summary import YouTubeSummarizer
+
+# Initialize
+summarizer = YouTubeSummarizer()
+
+# Get summary
+video_url = "https://www.youtube.com/watch?v=VIDEO_ID"
+summary = summarizer.summarize(video_url)
+
+print(summary.title)
+print(summary.quick_summary)
+for point in summary.key_points:
+    print(f"- {point}")
+```
+
+### Python - Advanced Analysis
+
+```python
+from youtube_summary import YouTubeSummarizer, AnalysisPrompt
+
+summarizer = YouTubeSummarizer()
+
+# Custom prompts
+prompts = [
+    AnalysisPrompt("technical", "List all technical terms and explain them"),
+    AnalysisPrompt("actionable", "Extract actionable advice and steps"),
+    AnalysisPrompt("quotes", "Find the most memorable quotes")
+]
+
+# Analyze
+results = summarizer.analyze(
+    video_id="VIDEO_ID",
+    prompts=prompts
+)
+
+for analysis in results:
+    print(f"\n## {analysis.prompt_name}\n")
+    print(analysis.content)
+```
+
+### Python - Transcript Extraction
+
+```python
+from youtube_summary import get_transcript
+
+# Simple transcript
+transcript = get_transcript("VIDEO_ID")
+print(transcript)
+
+# With timestamps
+transcript = get_transcript("VIDEO_ID", timestamps=True)
+for entry in transcript:
+    print(f"[{entry.start}] {entry.text}")
+
+# Export as VTT
+from youtube_summary import export_vtt
+
+export_vtt("VIDEO_ID", output="subtitles.vtt")
+```
+
+### Python - Clip Generation
+
+```python
+from youtube_summary import ClipGenerator
+
+generator = ClipGenerator()
+
+# Generate clip suggestions
+clips = generator.suggest_clips(
+    video_id="VIDEO_ID",
+    duration=60,  # seconds
+    count=5,
+    platforms=["tiktok", "youtube_shorts"]
+)
+
+for clip in clips:
+    print(f"\nClip {clip.number}: {clip.title}")
+    print(f"Time: {clip.start} - {clip.end}")
+    print(f"Virality Score: {clip.virality_score}/10")
+    print(f"Caption: {clip.suggested_caption}")
+```
+
+### JavaScript/Node.js
+
+```javascript
+const { YouTubeSummarizer } = require('./youtube-summary');
+
+async function summarizeVideo(videoUrl) {
+  const summarizer = new YouTubeSummarizer({
+    apiKey: process.env.GOOGLE_GEMINI_API_KEY
+  });
+
+  // Get summary
+  const summary = await summarizer.summarize(videoUrl);
+
+  console.log(`Title: ${summary.title}`);
+  console.log(`\nSummary:\n${summary.quickSummary}`);
+
+  console.log('\nKey Points:');
+  summary.keyPoints.forEach((point, i) => {
+    console.log(`${i + 1}. ${point}`);
+  });
+
+  // Get suggested clips
+  const clips = await summarizer.suggestClips(videoUrl, {
+    duration: 60,
+    count: 5
+  });
+
+  console.log('\nSuggested Clips:');
+  clips.forEach(clip => {
+    console.log(`- ${clip.title} (${clip.start} - ${clip.end})`);
+  });
+}
+```
+
+## Custom Prompts
+
+### Example Prompts
+
+```python
+# Educational content
+"Break down this video into key learning objectives and create study notes"
+
+# Tutorial analysis
+"Extract step-by-step instructions with timestamps for each step"
+
+# Interview extraction
+"Identify all questions asked and summarize the answers"
+
+# Review analysis
+"List pros and cons mentioned, with specific timestamps"
+
+# Technical deep-dive
+"Extract all code examples, technical concepts, and tools mentioned"
+
+# Marketing analysis
+"Analyze the video's hook, storytelling structure, and call-to-action"
+```
+
+## Best Practices
+
+| Practice | Recommendation |
+|----------|---------------|
+| Video Length | Works best with 5-60 minute videos |
+| Language | English transcripts work best (auto-translated may vary) |
+| Prompt Specificity | Be specific: "List tools mentioned" vs "Analyze video" |
+| Batch Processing | Process max 10-20 videos at once to avoid API limits |
+| Clip Duration | 30-60 seconds for TikTok/Shorts, 60-90s for YouTube |
+| Cache Results | Save summaries to avoid re-processing same videos |
+
+## Configuration
+
+Create `~/.config/youtube-summaries/config.yaml`:
+
+```yaml
+# API settings
+gemini:
+  api_key: "${GOOGLE_GEMINI_API_KEY}"
+  model: "gemini-pro"
+  temperature: 0.7
+  max_tokens: 2048
+
+# Default prompts
+prompts:
+  summary: |
+    Provide a comprehensive summary of this video including:
+    1. Main topic and key points
+    2. Important quotes with timestamps
+    3. Action items or takeaways
+    4. Who would benefit from watching
+
+  clips: |
+    Analyze this video and suggest 5 short clips (30-60 seconds) that would
+    perform well on TikTok/YouTube Shorts. For each clip provide:
+    - Start and end timestamp
+    - Catchy title
+    - Why it would be viral
+    - Suggested caption
+
+  technical: |
+    Extract all technical information including:
+    - Tools and technologies mentioned
+    - Code examples or commands
+    - Technical concepts explained
+    - Resources and documentation referenced
+
+# Output settings
+output:
+  default_format: markdown
+  include_metadata: true
+  include_timestamps: true
+
+# Clip settings
+clips:
+  default_duration: 60
+  min_virality_score: 7.0
+  platforms: ["tiktok", "youtube_shorts", "instagram_reels"]
+```
+
+## Webhook Integration
+
+Process videos automatically when uploaded:
+
+```python
+# webhook_server.py
+from flask import Flask, request
+from youtube_summary import YouTubeSummarizer
+
+app = Flask(__name__)
+summarizer = YouTubeSummarizer()
+
+@app.route('/webhook/youtube', methods=['POST'])
+def process_video():
+    data = request.json
+    video_id = data.get('video_id')
+
+    # Generate summary
+    summary = summarizer.summarize(video_id)
+
+    # Post to Slack/Discord/etc
+    post_to_slack(summary)
+
+    return {'status': 'success'}
+```
+
+## Advanced Features
+
+### Scene Detection
+
+```bash
+# Automatic scene detection
+python scripts/youtube_summary.py scenes VIDEO_ID \
+  --auto-detect \
+  --min-scene-length 30 \
+  --output scenes.json
+```
+
+### Multi-Language Support
+
+```bash
+# Summarize in different language
+python scripts/youtube_summary.py summarize VIDEO_ID \
+  --language spanish \
+  --output resumen.md
+```
+
+### Export Formats
+
+```bash
+# JSON export
+python scripts/youtube_summary.py summarize VIDEO_ID \
+  --format json \
+  --output summary.json
+
+# HTML export
+python scripts/youtube_summary.py summarize VIDEO_ID \
+  --format html \
+  --output summary.html \
+  --template professional
+```
+
+## Use Cases
+
+| Use Case | Command |
+|----------|---------|
+| Content Research | `summarize --depth comprehensive` |
+| Study Notes | `analyze --prompt "Create study notes with key concepts"` |
+| Social Media | `clips --duration 30 --count 10` |
+| Documentation | `transcript --timestamps --format markdown` |
+| Competitor Analysis | `analyze --prompt "Analyze strategy and messaging"` |
+| Tutorial Steps | `analyze --prompt "Extract step-by-step instructions"` |
+
+## Rate Limits & Costs
+
+- **Google Gemini API**: Free tier includes 60 requests per minute
+- **YouTube API**: 10,000 quota units per day (free)
+- **Transcript Extraction**: No API limits (uses youtube-transcript-api)
+
+## Error Handling
+
+- **No Transcript**: Falls back to video description and title analysis
+- **Private/Deleted Video**: Returns error with helpful message
+- **API Limit**: Automatically retries with exponential backoff
+- **Invalid Video ID**: Validates and suggests corrections

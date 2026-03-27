@@ -1,0 +1,8 @@
+openai>=1.0.0
+requests>=2.28.0
+reportlab>=3.6.0
+pyyaml>=6.0
+python-telegram-bot>=20.0  # Optional, for Telegram delivery
+google-auth>=2.0.0  # Optional, for Gmail delivery
+google-auth-oauthlib>=0.5.0
+google-api-python-client>=2.0.0
