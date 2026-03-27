@@ -44,6 +44,49 @@ Invoicing, expenses, financial reporting, and reconciliation.
 - Reconciliation Agent - Bank reconciliation automation
 - Tax Preparation Agent - Tax document collection and filing
 
+### ⚖️ [Legal Services](./legal/)
+Contract review, legal research, document automation, and case management.
+
+**Agents:**
+- Contract Review Agent - AI contract analysis and risk assessment
+- Legal Research Agent - Case law research and precedent discovery
+- Document Automation Agent - Template-based document generation
+- Case Management Agent - Matter tracking and deadline management
+- Discovery Assistant Agent - E-discovery and document review
+
+### 🏨 [Hospitality & Hotels](./hospitality/)
+Reservations, guest services, housekeeping, and revenue management.
+
+**Agents:**
+- Reservation Management Agent - Multi-channel booking automation
+- Guest Services Agent - AI concierge and communication
+- Housekeeping Coordinator - Room status and staff scheduling
+- Revenue Management Agent - Dynamic pricing optimization
+- Guest Experience Agent - Personalization and loyalty programs
+
+### 🏗️ [Construction & Contractors](./construction/)
+Project bidding, scheduling, materials ordering, and safety management.
+
+**Agents:**
+- Project Bidding Agent - Automated estimating and proposals
+- Project Scheduling Agent - CPM scheduling and resource management
+- Materials Ordering Agent - Procurement and inventory automation
+- Site Safety Agent - Safety compliance and incident tracking
+- Change Order Manager - Change request workflow automation
+- Daily Reporting Agent - Job site documentation
+
+### 📊 [Marketing & Advertising](./marketing/)
+Campaign management, content creation, lead generation, and analytics.
+
+**Agents:**
+- Campaign Manager Agent - End-to-end campaign orchestration
+- Content Creation Agent - AI-powered content generation
+- Social Media Manager Agent - Automated posting and engagement
+- Lead Generation Agent - Lead capture, scoring, and nurturing
+- Analytics & Reporting Agent - Automated insights and reports
+- SEO Optimization Agent - Content and technical SEO automation
+- Email Marketing Agent - Campaign creation and optimization
+
 ## Quick Start
 
 ```bash
