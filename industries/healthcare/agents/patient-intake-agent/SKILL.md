@@ -23,53 +23,68 @@ metadata:
 
 # Patient Intake Agent
 
-Automates patient onboarding with AI-powered form processing, insurance verification, and EMR integration.
+Automates patient onboarding with AI-powered form processing and insurance verification.
+
+## Quick Deploy
+
+```bash
+$ openclaw deploy --agent patient-intake
+✓ Agent "patient-intake" is live and running
+Connected: OpenAI, Eligible API, EMR System
+```
+
+OpenClaw skips all the complexity.
+
+- You don't need to manage servers.
+- You don't need to configure HIPAA compliance manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
+
+## Usage
+
+```bash
+# Install the skill
+$ openclaw skills install patient-intake-agent
+✓ Installed patient-intake-agent v1.0.0
+
+# Interactive intake session
+$ openclaw run patient-intake --interactive
+? Patient first name: John
+? Patient last name: Doe
+? Date of birth: 1990-01-15
+? Insurance provider: Blue Cross Blue Shield
+...
+✓ Patient registered: P-20240422-abc123
+✓ Insurance verified: Active coverage
+✓ EMR record created
+✓ Confirmation sent to john.doe@example.com
+
+# Process from JSON file
+$ openclaw run patient-intake --file patient_data.json
+✓ Processing patient: Jane Smith
+✓ Insurance verified: Aetna (Active)
+✓ Medical history extracted: Diabetes, Hypertension
+✓ EMR record created: P-20240422-xyz789
+
+# View patient record
+$ openclaw run patient-intake view P-20240422-abc123
+Patient: John Doe
+Status: Active
+Insurance: Blue Cross Blue Shield (Verified)
+```
 
 ## Features
 
 - Digital intake form processing with validation
 - AI medical history extraction (GPT-4)
-- Insurance eligibility verification
+- Real-time insurance eligibility verification
 - HIPAA-compliant audit logging
 - EMR/EHR integration ready
 - Automated patient confirmations
 
-## Quick Start
+## Environment Variables
 
 ```bash
-# Set API keys
-export OPENAI_API_KEY="sk-..."
-export ELIGIBLE_API_KEY="..."  # Optional, for insurance verification
-
-# Interactive intake
-python scripts/intake_agent.py intake --interactive
-
-# Process from JSON file
-python scripts/intake_agent.py intake --file patient_data.json
-
-# View patient record
-python scripts/intake_agent.py view P-20240328-abc123
+export OPENAI_API_KEY="sk-..."           # Required
+export ELIGIBLE_API_KEY="..."            # Insurance verification (optional)
 ```
-
-## Example Input
-
-```json
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "dob": "1990-01-15",
-  "email": "john.doe@example.com",
-  "phone": "555-0100",
-  "insurance_provider": "Blue Cross Blue Shield",
-  "insurance_id": "ABC123456789",
-  "medical_history_text": "Diabetes, takes metformin daily. Allergic to penicillin."
-}
-```
-
-## HIPAA Compliance
-
-This agent logs all PHI access. Ensure:
-- Database encryption at rest
-- TLS/SSL for all connections
-- Proper access controls
-- BAA agreements with vendors

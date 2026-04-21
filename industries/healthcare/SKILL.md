@@ -25,36 +25,50 @@ metadata:
 
 AI-powered automation for healthcare practices with HIPAA-compliant patient management.
 
-## Available Agents
-
-### 1. Patient Intake Agent
-Automates patient onboarding with AI-powered form processing, insurance verification, and medical history collection.
-
-### 2. Appointment Scheduler
-Intelligent appointment scheduling with conflict detection, automated reminders, and telehealth setup.
-
-### 3. Medical Billing Agent
-Automated medical billing, CPT/ICD-10 coding, insurance claims submission, and denial management.
-
-### 4. Prescription Manager
-E-prescription and refill automation with pharmacy integration.
-
-### 5. Medical Records Agent
-HIPAA-compliant records management with audit logging.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/healthcare
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export ELIGIBLE_API_KEY="..."        # Insurance verification
-export TWILIO_ACCOUNT_SID="..."      # SMS reminders
-
-cd agents/patient-intake-agent
-python scripts/intake_agent.py start
+$ openclaw deploy --agent healthcare-bot
+✓ Agent "healthcare-bot" is live and running
+Connected: EMR/EHR, Insurance API, Twilio, Calendar
 ```
+
+OpenClaw skips all the complexity.
+
+- You don't need to manage servers.
+- You don't need to configure HIPAA compliance manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
+
+## Usage
+
+```bash
+# Install the skill
+$ openclaw skills install healthcare-agents
+✓ Installed healthcare-agents v1.0.0
+
+# Deploy patient intake agent
+$ openclaw deploy --agent patient-intake
+✓ Agent "patient-intake" is live and running
+Connected: OpenAI, Eligible API, EMR System
+
+# Process a new patient
+$ openclaw run patient-intake --file patient_data.json
+✓ Patient John Doe registered
+✓ Insurance verified: Blue Cross (Active)
+✓ EMR record created: P-20240422-abc123
+✓ Confirmation email sent
+```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `patient-intake` | Automates patient onboarding, insurance verification, medical history |
+| `appointment-scheduler` | Smart scheduling with reminders and telehealth setup |
+| `medical-billing` | CPT/ICD-10 coding, claims submission, denial management |
+| `prescription-manager` | E-prescription and refill automation |
+| `medical-records` | HIPAA-compliant records management with audit logging |
 
 ## Integrations
 
@@ -62,10 +76,11 @@ python scripts/intake_agent.py start
 - **Insurance**: Eligible API, Change Healthcare, Availity
 - **Communication**: Twilio, SendGrid, RingCentral
 
-## HIPAA Compliance Required
+## Environment Variables
 
-- AES-256 encryption at rest
-- TLS 1.3 for data in transit
-- Multi-factor authentication
-- 7-year audit log retention
-- Business Associate Agreements (BAAs)
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export ELIGIBLE_API_KEY="..."            # Insurance verification
+export TWILIO_ACCOUNT_SID="..."          # SMS reminders
+export TWILIO_AUTH_TOKEN="..."
+```

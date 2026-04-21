@@ -25,61 +25,67 @@ metadata:
 
 AI-powered automation for marketing agencies, in-house teams, and digital advertisers.
 
-## Available Agents
-
-### 1. Campaign Manager Agent
-Multi-channel campaign planning, budget allocation, A/B test management, and ROI analysis.
-
-### 2. Content Creation Agent
-AI-powered blog posts, social media content, ad copy, email newsletters, and landing page copy.
-
-### 3. Social Media Manager Agent
-Content calendar, auto-posting, engagement monitoring, hashtag optimization, and social listening.
-
-### 4. Lead Generation Agent
-Landing page optimization, lead scoring, automated email sequences, and CRM integration.
-
-### 5. Analytics & Reporting Agent
-Multi-channel data aggregation, automated reports, anomaly detection, and predictive analytics.
-
-### 6. SEO Optimization Agent
-Keyword research, on-page SEO analysis, content gap identification, and technical SEO audits.
-
-### 7. Email Marketing Agent
-Template generation, subject line optimization, list segmentation, and A/B testing automation.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/marketing
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export GOOGLE_ADS_API_KEY="..."
-export FACEBOOK_ACCESS_TOKEN="..."
-export HUBSPOT_API_KEY="..."
-
-cd agents/campaign-manager-agent
-python scripts/campaign_agent.py create --type "product_launch"
+$ openclaw deploy --agent marketing-bot
+✓ Agent "marketing-bot" is live and running
+Connected: Google Ads, Meta Ads, HubSpot, Analytics
 ```
 
-## Sample Workflow
+OpenClaw skips all the complexity.
 
-```python
-from marketing.agents import CampaignManager
+- You don't need to manage servers.
+- You don't need to configure ad platform APIs manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
 
-agent = CampaignManager()
-campaign = agent.create_campaign({
-    "product": "AI-Powered CRM Software",
-    "target_audience": "B2B SaaS companies",
-    "budget": 50000,
-    "duration": "3 months",
-    "channels": ["google_ads", "linkedin_ads", "email"]
-})
+## Usage
 
-# Returns: strategy phases, content calendar, KPIs,
-# and expected performance metrics
+```bash
+# Install the skill
+$ openclaw skills install marketing-agents
+✓ Installed marketing-agents v1.0.0
+
+# Create a marketing campaign
+$ openclaw run campaign-agent create --product "AI CRM" --budget 50000
+✓ Target audience analyzed: B2B SaaS
+✓ 3-phase strategy created
+✓ Budget allocated across channels
+✓ Content calendar generated: 45 pieces
+✓ Expected leads: 750
+✓ Expected ROAS: 3.2x
+
+# Generate content
+$ openclaw run content-agent write --type blog --topic "AI in Sales 2024"
+✓ Keyword research: 12 targets
+✓ Outline generated
+✓ Blog post written: 1,523 words
+✓ SEO score: 85/100
+✓ Social posts created: LinkedIn, Twitter, Facebook
+✓ Featured image prompt ready
+
+# Analyze campaign performance
+$ openclaw run analytics-agent report --period "last 7 days"
+✓ Data collected: Google Ads, Meta, Email
+✓ Total spend: $8,450
+✓ Conversions: 89
+✓ ROAS: 14.8x
+✓ Insights: 3 recommendations
+✓ Report generated: weekly_report.pdf
 ```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `campaign-agent` | Multi-channel campaigns, budget allocation, A/B testing |
+| `content-agent` | Blog posts, ad copy, social content, email newsletters |
+| `social-agent` | Content calendar, auto-posting, engagement monitoring |
+| `lead-agent` | Lead capture, scoring, qualification, nurturing |
+| `analytics-agent` | Data aggregation, automated reports, insights |
+| `seo-agent` | Keyword research, on-page optimization, technical audits |
+| `email-agent` | Templates, subject lines, segmentation, A/B testing |
 
 ## Integrations
 
@@ -90,9 +96,11 @@ campaign = agent.create_campaign({
 - **SEO**: Ahrefs, SEMrush, Moz
 - **Social**: Hootsuite, Buffer, Sprout Social
 
-## AI Capabilities
+## Environment Variables
 
-- Natural language content generation
-- Image generation (DALL-E, Midjourney)
-- Predictive analytics and forecasting
-- Dynamic personalization
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export GOOGLE_ADS_API_KEY="..."          # Google Ads
+export FACEBOOK_ACCESS_TOKEN="..."       # Meta Ads
+export HUBSPOT_API_KEY="..."             # HubSpot
+```

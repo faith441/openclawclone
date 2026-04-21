@@ -25,53 +25,61 @@ metadata:
 
 AI-powered automation for online stores, marketplaces, and retail operations.
 
-## Available Agents
-
-### 1. Inventory Manager
-Automated stock tracking, reordering, and multi-warehouse management with low stock predictions.
-
-### 2. Order Processor
-End-to-end order fulfillment with payment processing, shipping labels, and customer notifications.
-
-### 3. Customer Support Agent
-AI-powered customer service with natural language ticket processing and automated responses.
-
-### 4. Shipping Coordinator
-Rate shopping across carriers, label generation, tracking updates, and delivery exception handling.
-
-### 5. Product Catalog Agent
-Product data enrichment with AI, SEO-optimized descriptions, and multi-channel sync.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/ecommerce
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export SHOPIFY_API_KEY="..."
-export SHIPSTATION_KEY="..."
-
-cd agents/order-processor
-python scripts/order_agent.py process
+$ openclaw deploy --agent ecommerce-bot
+✓ Agent "ecommerce-bot" is live and running
+Connected: Shopify, Stripe, ShipStation, Zendesk
 ```
 
-## Sample Workflow
+OpenClaw skips all the complexity.
 
-```python
-from ecommerce.agents import OrderProcessor
+- You don't need to manage servers.
+- You don't need to configure payment gateways manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
 
-agent = OrderProcessor()
-result = agent.process({
-    "order_id": "ORD-12345",
-    "customer": {"name": "Jane Smith", "email": "jane@example.com"},
-    "items": [{"sku": "PROD-001", "quantity": 2, "price": 29.99}],
-    "total": 59.98
-})
+## Usage
 
-# Automatically validates inventory, charges payment,
-# generates shipping label, and sends confirmation
+```bash
+# Install the skill
+$ openclaw skills install ecommerce-agents
+✓ Installed ecommerce-agents v1.0.0
+
+# Process new orders automatically
+$ openclaw run order-agent process
+✓ 15 new orders found
+✓ Inventory validated for all items
+✓ Payments captured: $2,847.50
+✓ Shipping labels generated
+✓ Customers notified
+
+# Handle customer support ticket
+$ openclaw run support-agent --ticket "Where is my order #12345?"
+✓ Order found: #12345
+✓ Status: In transit (UPS)
+✓ ETA: Tomorrow by 5 PM
+✓ Response sent to customer
+✓ Ticket resolved automatically
+
+# Update inventory across channels
+$ openclaw run inventory-agent sync
+✓ Synced: Shopify ↔ Amazon ↔ eBay
+✓ Low stock alerts: 3 products
+✓ Reorder suggestions generated
+✓ Purchase orders created
 ```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `order-agent` | End-to-end order fulfillment, payments, notifications |
+| `inventory-agent` | Stock tracking, reordering, multi-warehouse management |
+| `support-agent` | AI customer service, ticket processing, auto-responses |
+| `shipping-agent` | Rate shopping, labels, tracking, delivery exceptions |
+| `catalog-agent` | Product enrichment, SEO descriptions, multi-channel sync |
 
 ## Integrations
 
@@ -80,3 +88,12 @@ result = agent.process({
 - **Shipping**: ShipStation, Shippo, EasyPost
 - **Payment**: Stripe, PayPal, Square
 - **Support**: Zendesk, Gorgias, Freshdesk
+
+## Environment Variables
+
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export SHOPIFY_API_KEY="..."             # Shopify store
+export STRIPE_API_KEY="..."              # Payments
+export SHIPSTATION_KEY="..."             # Shipping
+```

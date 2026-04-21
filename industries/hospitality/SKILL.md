@@ -25,54 +25,63 @@ metadata:
 
 AI-powered automation for hotels, resorts, vacation rentals, and hospitality businesses.
 
-## Available Agents
-
-### 1. Reservation Management Agent
-Multi-channel booking integration (OTAs, GDS), rate optimization, availability management, and automated confirmations.
-
-### 2. Guest Services Agent
-24/7 AI chatbot for guest inquiries, local recommendations, room service ordering, and special arrangements.
-
-### 3. Housekeeping Coordinator
-Room status tracking, staff scheduling, priority assignments, and inventory management.
-
-### 4. Revenue Management Agent
-Demand forecasting, competitor rate monitoring, dynamic pricing, and RevPAR optimization.
-
-### 5. Guest Experience Agent
-Guest profile management, preference tracking, loyalty programs, and review monitoring.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/hospitality
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export CLOUDBEDS_API_KEY="..."    # PMS integration
-export TWILIO_ACCOUNT_SID="..."   # SMS notifications
-
-cd agents/reservation-agent
-python scripts/reservation_agent.py start
+$ openclaw deploy --agent hospitality-bot
+✓ Agent "hospitality-bot" is live and running
+Connected: Cloudbeds, Booking.com, Twilio, Stripe
 ```
 
-## Sample Workflow
+OpenClaw skips all the complexity.
 
-```python
-from hospitality.agents import ReservationAgent
+- You don't need to manage servers.
+- You don't need to configure OTA integrations manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
 
-agent = ReservationAgent()
-result = agent.process_booking({
-    "guest_name": "John Smith",
-    "check_in": "2024-04-15",
-    "check_out": "2024-04-18",
-    "room_type": "Deluxe King",
-    "special_requests": "High floor, late check-in"
-})
+## Usage
 
-# Checks availability, assigns room, processes payment,
-# sends confirmation, schedules pre-arrival email
+```bash
+# Install the skill
+$ openclaw skills install hospitality-agents
+✓ Installed hospitality-agents v1.0.0
+
+# Process a new booking
+$ openclaw run reservation-agent book --guest "John Smith" --dates "Apr 15-18"
+✓ Availability checked: Deluxe King available
+✓ Room assigned: #512 (high floor per request)
+✓ Payment processed: $897.00
+✓ Confirmation sent to guest
+✓ Pre-arrival email scheduled
+✓ PMS updated: RES-789012
+
+# Handle guest inquiry (AI concierge)
+$ openclaw run guest-agent respond --message "Good Italian restaurant nearby?"
+✓ Guest profile loaded: John Smith, Room 512
+✓ Preferences analyzed
+✓ 3 restaurants recommended
+✓ Response sent via SMS
+✓ Reservation offer included
+
+# Optimize room pricing
+$ openclaw run revenue-agent optimize --dates "May 1-31"
+✓ Demand forecast generated
+✓ Competitor rates analyzed
+✓ 23 price adjustments recommended
+✓ Expected revenue increase: +9.5%
+✓ Changes applied to PMS
 ```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `reservation-agent` | Multi-channel bookings, availability, confirmations |
+| `guest-agent` | 24/7 AI concierge, recommendations, service requests |
+| `housekeeping-agent` | Room status, staff scheduling, inventory |
+| `revenue-agent` | Dynamic pricing, demand forecasting, RevPAR optimization |
+| `experience-agent` | Guest profiles, loyalty programs, review monitoring |
 
 ## Integrations
 
@@ -82,6 +91,11 @@ result = agent.process_booking({
 - **Communication**: Twilio, Intercom, SendGrid
 - **Payment**: Stripe, Adyen, Shift4
 
-## Multi-Language Support
+## Environment Variables
 
-English, Spanish, French, German, Italian, Portuguese, Chinese, Japanese, Korean, Arabic, Russian
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export CLOUDBEDS_API_KEY="..."           # PMS integration
+export TWILIO_ACCOUNT_SID="..."          # SMS notifications
+export TWILIO_AUTH_TOKEN="..."
+```

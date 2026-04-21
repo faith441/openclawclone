@@ -23,62 +23,74 @@ metadata:
 
 # Real Estate AI Agents
 
-AI-powered automation for real estate agents, brokers, and property management companies.
+AI-powered automation for real estate agents, brokers, and property management.
+
+## Quick Deploy
+
+```bash
+$ openclaw deploy --agent real-estate-bot
+✓ Agent "real-estate-bot" is live and running
+Connected: Zillow, MLS, DocuSign, CRM
+```
+
+OpenClaw skips all the complexity.
+
+- You don't need to manage servers.
+- You don't need to configure MLS integrations manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
+
+## Usage
+
+```bash
+# Install the skill
+$ openclaw skills install real-estate-agents
+✓ Installed real-estate-agents v1.0.0
+
+# Create a property listing
+$ openclaw run listing-agent create --address "123 Main St, SF, CA"
+✓ Property analyzed: 3 bed, 2 bath, 1,800 sqft
+✓ AI description generated (SEO optimized)
+✓ Photos enhanced and staged virtually
+✓ Listed on: Zillow, Realtor.com, MLS
+✓ Listing ID: L-2024-12345
+
+# Qualify a new lead
+$ openclaw run lead-agent qualify --email "buyer@example.com"
+✓ Lead captured: Sarah Johnson
+✓ Score: 85/100 (Hot Lead)
+✓ Budget: $1.2M - $1.5M
+✓ Assigned to: agent@realty.com
+✓ Drip campaign started
+
+# Schedule a showing
+$ openclaw run showing-agent book --property L-2024-12345
+✓ Available slots found: 5
+✓ Showing booked: Saturday 2:00 PM
+✓ Confirmation sent to buyer
+✓ Route optimized with 2 other showings
+```
 
 ## Available Agents
 
-### 1. Property Listing Agent
-Automatically create, format, and distribute property listings with AI-generated descriptions and photo enhancement.
-
-### 2. Lead Management Agent
-Capture, qualify, and nurture leads automatically with scoring, drip campaigns, and CRM integration.
-
-### 3. Showing Scheduler
-Smart appointment scheduling with availability matching, route optimization, and feedback collection.
-
-### 4. Contract Processor
-Automate document generation, offer/counteroffer tracking, and e-signature workflows.
-
-### 5. Market Analysis Agent
-Comparative market analysis, price recommendations, and market trends.
-
-## Quick Start
-
-```bash
-cd industries/real-estate
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export ZILLOW_API_KEY="..."
-export DOCUSIGN_KEY="..."
-
-cd agents/property-listing-agent
-python scripts/listing_agent.py create --property property_data.json
-```
-
-## Sample Workflow
-
-```python
-from real_estate.agents import PropertyListingAgent
-
-agent = PropertyListingAgent()
-listing = agent.create_listing({
-    "address": "123 Main St, San Francisco, CA 94102",
-    "price": 1250000,
-    "bedrooms": 3,
-    "bathrooms": 2,
-    "sqft": 1800,
-    "features": ["hardwood floors", "updated kitchen"],
-    "photos": ["img1.jpg", "img2.jpg"]
-})
-
-# AI generates optimized description
-agent.distribute(listing, platforms=["zillow", "realtor", "mls"])
-```
+| Agent | What it does |
+|-------|--------------|
+| `listing-agent` | AI-generated listings, photo enhancement, multi-platform distribution |
+| `lead-agent` | Lead capture, scoring, qualification, and nurturing |
+| `showing-agent` | Smart scheduling, route optimization, feedback collection |
+| `contract-agent` | Document generation, e-signatures, offer tracking |
+| `market-agent` | CMA reports, price recommendations, market trends |
 
 ## Integrations
 
-- **MLS Systems**: API integration for listing distribution
-- **Platforms**: Zillow, Realtor.com, Redfin
+- **Platforms**: Zillow, Realtor.com, Redfin, MLS
 - **E-Signatures**: DocuSign, HelloSign
 - **CRM**: Salesforce, HubSpot, Follow Up Boss
+
+## Environment Variables
+
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export ZILLOW_API_KEY="..."              # Zillow integration
+export DOCUSIGN_KEY="..."                # E-signatures
+```

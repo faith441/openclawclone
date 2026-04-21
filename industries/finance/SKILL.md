@@ -25,55 +25,62 @@ metadata:
 
 AI-powered automation for bookkeeping, accounting, and financial management.
 
-## Available Agents
-
-### 1. Invoice Generator
-Automated invoicing with recurring schedules, payment reminders, multi-currency support, and accounting integration.
-
-### 2. Expense Tracker
-OCR receipt scanning, AI-powered categorization, mileage tracking, and policy compliance checking.
-
-### 3. Financial Reporter
-Automated P&L statements, balance sheets, cash flow reports, and custom report builder.
-
-### 4. Reconciliation Agent
-Bank and credit card reconciliation with transaction matching and discrepancy detection.
-
-### 5. Tax Preparation Agent
-1099/W-2 generation, deduction tracking, document collection, and filing deadline reminders.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/finance
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export QUICKBOOKS_CLIENT_ID="..."
-export PLAID_CLIENT_ID="..."
-
-cd agents/invoice-generator
-python scripts/invoice_agent.py create --client client_data.json
+$ openclaw deploy --agent finance-bot
+✓ Agent "finance-bot" is live and running
+Connected: QuickBooks, Plaid, Stripe, Bank APIs
 ```
 
-## Sample Workflow
+OpenClaw skips all the complexity.
 
-```python
-from finance.agents import InvoiceGenerator
+- You don't need to manage servers.
+- You don't need to configure banking integrations manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
 
-agent = InvoiceGenerator()
-invoice = agent.create_invoice({
-    "client": {"name": "Acme Corp", "email": "billing@acme.com"},
-    "items": [
-        {"description": "Consulting Services", "hours": 40, "rate": 150},
-        {"description": "Project Management", "hours": 20, "rate": 125}
-    ],
-    "terms": "NET30"
-})
+## Usage
 
-# Generates PDF, sends to client, records in accounting,
-# and schedules payment reminders
+```bash
+# Install the skill
+$ openclaw skills install finance-agents
+✓ Installed finance-agents v1.0.0
+
+# Generate and send invoice
+$ openclaw run invoice-agent create --client "Acme Corp" --hours 40 --rate 150
+✓ Invoice created: INV-2024-001
+✓ Amount: $6,000.00
+✓ PDF generated
+✓ Sent to: billing@acme.com
+✓ Payment reminders scheduled
+
+# Process expense receipts
+$ openclaw run expense-agent scan --folder ./receipts
+✓ 12 receipts processed
+✓ Categories assigned (AI)
+✓ Total expenses: $1,847.32
+✓ Synced to QuickBooks
+✓ Policy violations: 0
+
+# Reconcile bank accounts
+$ openclaw run reconcile-agent run
+✓ Connected to 3 bank accounts
+✓ 156 transactions matched
+✓ 4 discrepancies found
+✓ Journal entries created
+✓ Report generated
 ```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `invoice-agent` | Automated invoicing, payment tracking, reminders |
+| `expense-agent` | OCR receipt scanning, categorization, compliance |
+| `report-agent` | P&L, balance sheets, cash flow, custom reports |
+| `reconcile-agent` | Bank reconciliation, transaction matching |
+| `tax-agent` | 1099/W-2 generation, deduction tracking, filing |
 
 ## Integrations
 
@@ -82,9 +89,11 @@ invoice = agent.create_invoice({
 - **Payment**: Stripe, PayPal, Square
 - **Payroll**: Gusto, ADP, Paychex
 
-## Compliance
+## Environment Variables
 
-- SOC 2 Type II recommended
-- PCI DSS for payment data
-- Data encryption at rest and in transit
-- Role-based access control
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export QUICKBOOKS_CLIENT_ID="..."        # QuickBooks
+export PLAID_CLIENT_ID="..."             # Banking
+export PLAID_SECRET="..."
+```

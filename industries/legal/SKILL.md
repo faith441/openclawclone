@@ -25,48 +25,64 @@ metadata:
 
 AI-powered automation for law firms, legal departments, and legal service providers.
 
-## Available Agents
-
-### 1. Contract Review Agent
-Automated contract analysis, clause extraction, risk identification, and redlining suggestions.
-
-### 2. Legal Research Agent
-Natural language legal queries, case law search, citation verification, and research memo generation.
-
-### 3. Document Automation Agent
-Template-based document generation with AI-powered clause selection and e-signature integration.
-
-### 4. Case Management Agent
-Case intake, deadline tracking, court filing automation, and time tracking.
-
-### 5. Discovery Assistant Agent
-E-discovery processing, AI-powered document classification, privilege review, and redaction automation.
-
-## Quick Start
+## Quick Deploy
 
 ```bash
-cd industries/legal
-pip install -r requirements.txt
-
-export OPENAI_API_KEY="sk-..."
-export CLIO_API_KEY="..."          # Practice management
-export DOCUSIGN_KEY="..."          # E-signatures
-
-cd agents/contract-review-agent
-python scripts/contract_agent.py review --file contract.pdf
+$ openclaw deploy --agent legal-bot
+✓ Agent "legal-bot" is live and running
+Connected: Clio, Westlaw, DocuSign, NetDocuments
 ```
 
-## Sample Workflow
+OpenClaw skips all the complexity.
 
-```python
-from legal.agents import ContractReviewAgent
+- You don't need to manage servers.
+- You don't need to configure legal research APIs manually.
+- You don't need to debug agent behavior.
+- It just works. 24/7.
 
-agent = ContractReviewAgent()
-analysis = agent.review_contract("vendor_agreement.pdf")
+## Usage
 
-# Returns: document_type, parties, term, risks with severity,
-# missing clauses, key dates, and redline suggestions
+```bash
+# Install the skill
+$ openclaw skills install legal-agents
+✓ Installed legal-agents v1.0.0
+
+# Review a contract for risks
+$ openclaw run contract-agent review --file vendor_agreement.pdf
+✓ Document type: Vendor Services Agreement
+✓ Parties: Acme Corp, XYZ Services LLC
+✓ Term: 3 years
+✓ Risks found: 2 HIGH, 3 MEDIUM
+✓ Missing clauses: Force Majeure, GDPR Compliance
+✓ Redline suggestions generated
+✓ Report saved: contract_review_report.pdf
+
+# Legal research query
+$ openclaw run research-agent query "standard of care for attorneys in California"
+✓ Query analyzed
+✓ 12 relevant cases found
+✓ 3 statutes identified
+✓ Research memo generated
+✓ Citations verified
+
+# Generate legal document
+$ openclaw run document-agent create --type NDA --parties "Company A, Company B"
+✓ Template selected: Mutual NDA
+✓ Parties populated
+✓ Clauses customized (AI)
+✓ Document generated: NDA_CompanyA_CompanyB.docx
+✓ Sent for e-signature via DocuSign
 ```
+
+## Available Agents
+
+| Agent | What it does |
+|-------|--------------|
+| `contract-agent` | Contract analysis, risk identification, redlining |
+| `research-agent` | Case law search, citation verification, memo generation |
+| `document-agent` | Template-based document generation, e-signatures |
+| `case-agent` | Case intake, deadline tracking, court filings |
+| `discovery-agent` | E-discovery processing, document classification, privilege review |
 
 ## Integrations
 
@@ -76,10 +92,11 @@ analysis = agent.review_contract("vendor_agreement.pdf")
 - **E-Signatures**: DocuSign, Adobe Sign
 - **E-Discovery**: Relativity, Everlaw, Logikcull
 
-## Ethics & Compliance
+## Environment Variables
 
-- Attorney-client privilege protection
-- ABA Model Rule 1.1 technology competence
-- Human review of all AI outputs required
-- Audit logging of all access
-- Bias detection and mitigation
+```bash
+export OPENAI_API_KEY="sk-..."           # Required
+export CLIO_API_KEY="..."                # Practice management
+export DOCUSIGN_KEY="..."                # E-signatures
+export WESTLAW_API_KEY="..."             # Legal research (optional)
+```
