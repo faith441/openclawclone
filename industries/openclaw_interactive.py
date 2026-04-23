@@ -231,9 +231,45 @@ class InteractiveChat:
             ai_provider = "Claude" if self.has_claude else "OpenAI"
             gen_desc = input(f"\n🤖 Generate AI description using {ai_provider}? (y/n, default: y): ").strip().lower()
             config['ai_description'] = gen_desc != 'n'
+            config['ai_api_key'] = None  # Already set in environment
         else:
-            print("\n⚠️  AI not configured (set ANTHROPIC_API_KEY or OPENAI_API_KEY)")
-            config['ai_description'] = False
+            print("\n⚠️  AI not configured")
+            setup_ai = input("  Would you like to set up AI now? (y/n): ").strip().lower()
+            if setup_ai == 'y':
+                print("\n  Choose AI provider:")
+                print("    1. Claude (Anthropic) - Recommended")
+                print("    2. OpenAI (ChatGPT)")
+                provider_choice = input("  Choose (1-2, default: 1): ").strip()
+
+                if provider_choice == "2":
+                    print("\n  📝 Get your OpenAI API key:")
+                    print("     1. Go to https://platform.openai.com/api-keys")
+                    print("     2. Create new secret key")
+                    api_key = input("\n  Paste your OpenAI API key (or press Enter to skip): ").strip()
+                    if api_key:
+                        config['ai_api_key'] = api_key
+                        config['ai_provider'] = 'openai'
+                        config['ai_description'] = True
+                        print("  ✅ OpenAI configured for this session!")
+                    else:
+                        config['ai_description'] = False
+                        config['ai_api_key'] = None
+                else:
+                    print("\n  📝 Get your Claude API key:")
+                    print("     1. Go to https://console.anthropic.com/")
+                    print("     2. Create API key")
+                    api_key = input("\n  Paste your Claude API key (or press Enter to skip): ").strip()
+                    if api_key:
+                        config['ai_api_key'] = api_key
+                        config['ai_provider'] = 'claude'
+                        config['ai_description'] = True
+                        print("  ✅ Claude configured for this session!")
+                    else:
+                        config['ai_description'] = False
+                        config['ai_api_key'] = None
+            else:
+                config['ai_description'] = False
+                config['ai_api_key'] = None
 
         return config
 
@@ -248,11 +284,36 @@ class InteractiveChat:
         count = input("  How many orders to process? (default: all pending): ").strip()
         config['order_count'] = int(count) if count else None
 
-        print("\n🔗 INTEGRATIONS:")
-        print("  Which platforms should we check?")
-        config['check_shopify'] = input("    Shopify? (y/n, default: y): ").strip().lower() != 'n'
-        config['check_woocommerce'] = input("    WooCommerce? (y/n, default: n): ").strip().lower() == 'y'
-        config['check_amazon'] = input("    Amazon? (y/n, default: n): ").strip().lower() == 'y'
+        print("\n🔗 SHOPIFY INTEGRATION:")
+        if not os.environ.get('SHOPIFY_ACCESS_TOKEN'):
+            print("  ⚠️  Shopify not configured")
+            setup_shopify = input("  Would you like to set up Shopify now? (y/n): ").strip().lower()
+            if setup_shopify == 'y':
+                print("\n  📝 Get your Shopify credentials:")
+                print("     1. Go to Shopify Admin > Apps > Develop apps")
+                print("     2. Create private app")
+                print("     3. Get Admin API access token")
+
+                shop_name = input("\n  Shopify store name (e.g., 'mystore' from mystore.myshopify.com): ").strip()
+                access_token = input("  Admin API access token: ").strip()
+
+                if shop_name and access_token:
+                    config['shopify_shop_name'] = shop_name
+                    config['shopify_access_token'] = access_token
+                    config['check_shopify'] = True
+                    print("  ✅ Shopify configured for this session!")
+                else:
+                    config['check_shopify'] = False
+                    config['shopify_shop_name'] = None
+                    config['shopify_access_token'] = None
+            else:
+                config['check_shopify'] = False
+                config['shopify_shop_name'] = None
+                config['shopify_access_token'] = None
+        else:
+            config['check_shopify'] = input("    Process Shopify orders? (y/n, default: y): ").strip().lower() != 'n'
+            config['shopify_shop_name'] = None
+            config['shopify_access_token'] = None
 
         print("\n📧 NOTIFICATIONS:")
         config['send_confirmations'] = input("  Send order confirmations? (y/n, default: y): ").strip().lower() != 'n'
@@ -380,6 +441,32 @@ class InteractiveChat:
 
         config = {}
 
+        # SMTP Setup
+        if not os.environ.get('SMTP_USER'):
+            print("\n⚠️  Email (SMTP) not configured")
+            setup_smtp = input("  Would you like to set up email now? (y/n): ").strip().lower()
+            if setup_smtp == 'y':
+                print("\n  📝 Enter your SMTP settings:")
+                print("     For Gmail: smtp.gmail.com, port 587")
+                print("     Get app password: https://myaccount.google.com/apppasswords")
+
+                smtp_config = {}
+                smtp_config['host'] = input("\n  SMTP Host (default: smtp.gmail.com): ").strip() or "smtp.gmail.com"
+                smtp_config['port'] = input("  SMTP Port (default: 587): ").strip() or "587"
+                smtp_config['user'] = input("  Email address: ").strip()
+                smtp_config['password'] = input("  Password/App Password: ").strip()
+
+                if smtp_config['user'] and smtp_config['password']:
+                    config['smtp_config'] = smtp_config
+                    print("  ✅ Email configured for this session!")
+                else:
+                    print("  ⚠️  Skipping email setup")
+                    config['smtp_config'] = None
+            else:
+                config['smtp_config'] = None
+        else:
+            config['smtp_config'] = None  # Already set in environment
+
         print("\n📬 EMAIL DETAILS:")
         config['to'] = input("  To (email address): ").strip() or "recipient@example.com"
         config['subject'] = input("  Subject: ").strip() or "Test Email"
@@ -396,6 +483,31 @@ class InteractiveChat:
         print("-" * 50)
 
         config = {}
+
+        # Twilio Setup
+        if not os.environ.get('TWILIO_ACCOUNT_SID'):
+            print("\n⚠️  Twilio not configured")
+            setup_twilio = input("  Would you like to set up Twilio now? (y/n): ").strip().lower()
+            if setup_twilio == 'y':
+                print("\n  📝 Get your Twilio credentials:")
+                print("     1. Sign up at https://www.twilio.com/try-twilio (Free $15 credit!)")
+                print("     2. Get Account SID, Auth Token, and Phone Number from console")
+
+                twilio_config = {}
+                twilio_config['account_sid'] = input("\n  Twilio Account SID: ").strip()
+                twilio_config['auth_token'] = input("  Twilio Auth Token: ").strip()
+                twilio_config['phone_number'] = input("  Twilio Phone Number (e.g., +1234567890): ").strip()
+
+                if all([twilio_config['account_sid'], twilio_config['auth_token'], twilio_config['phone_number']]):
+                    config['twilio_config'] = twilio_config
+                    print("  ✅ Twilio configured for this session!")
+                else:
+                    print("  ⚠️  Skipping Twilio setup")
+                    config['twilio_config'] = None
+            else:
+                config['twilio_config'] = None
+        else:
+            config['twilio_config'] = None  # Already set in environment
 
         print("\n💬 SMS DETAILS:")
         config['to'] = input("  To (phone with country code, e.g., +1234567890): ").strip() or "+11234567890"
@@ -507,6 +619,30 @@ class InteractiveChat:
 
         config = {}
 
+        # Slack Webhook Setup
+        if not os.environ.get('SLACK_WEBHOOK_URL'):
+            print("\n⚠️  Slack not configured")
+            setup_slack = input("  Would you like to set up Slack now? (y/n): ").strip().lower()
+            if setup_slack == 'y':
+                print("\n  📝 Get your Slack webhook URL:")
+                print("     1. Go to https://api.slack.com/apps")
+                print("     2. Create app > Incoming Webhooks")
+                print("     3. Activate webhooks and add to workspace")
+                print("     4. Copy webhook URL")
+
+                webhook_url = input("\n  Paste your Slack webhook URL: ").strip()
+
+                if webhook_url:
+                    config['slack_webhook_url'] = webhook_url
+                    print("  ✅ Slack configured for this session!")
+                else:
+                    print("  ⚠️  Skipping Slack setup")
+                    config['slack_webhook_url'] = None
+            else:
+                config['slack_webhook_url'] = None
+        else:
+            config['slack_webhook_url'] = None  # Already set in environment
+
         print("\n💬 MESSAGE:")
         config['message'] = input("  Message text: ").strip() or "Hello from OpenClaw!"
 
@@ -557,6 +693,13 @@ class InteractiveChat:
                 "--email", config['client_email']
             ]
         elif agent_type == "real-estate":
+            # Set AI credentials if provided
+            if config.get('ai_api_key'):
+                if config.get('ai_provider') == 'claude':
+                    env['ANTHROPIC_API_KEY'] = config['ai_api_key']
+                else:
+                    env['OPENAI_API_KEY'] = config['ai_api_key']
+
             cmd = [
                 "python3",
                 str(self.base_path / "real-estate/agents/listing-agent/scripts/listing_agent.py"),
@@ -567,6 +710,11 @@ class InteractiveChat:
                 "--sqft", str(config['sqft'])
             ]
         elif agent_type == "ecommerce":
+            # Set Shopify credentials if provided
+            if config.get('shopify_shop_name') and config.get('shopify_access_token'):
+                env['SHOPIFY_SHOP_NAME'] = config['shopify_shop_name']
+                env['SHOPIFY_ACCESS_TOKEN'] = config['shopify_access_token']
+
             count = config.get('order_count', 15)
             cmd = [
                 "python3",
@@ -604,6 +752,14 @@ class InteractiveChat:
                 "--duration", config['duration']
             ]
         elif agent_type == "email":
+            # Set SMTP credentials if provided
+            if config.get('smtp_config'):
+                smtp = config['smtp_config']
+                env['SMTP_HOST'] = smtp['host']
+                env['SMTP_PORT'] = smtp['port']
+                env['SMTP_USER'] = smtp['user']
+                env['SMTP_PASS'] = smtp['password']
+
             cmd = [
                 "python3",
                 str(self.base_path / "automation/agents/email-sender/scripts/email_agent.py"),
@@ -614,6 +770,13 @@ class InteractiveChat:
             if config.get('html'):
                 cmd.append("--html")
         elif agent_type == "sms":
+            # Set Twilio credentials if provided
+            if config.get('twilio_config'):
+                twilio = config['twilio_config']
+                env['TWILIO_ACCOUNT_SID'] = twilio['account_sid']
+                env['TWILIO_AUTH_TOKEN'] = twilio['auth_token']
+                env['TWILIO_PHONE_NUMBER'] = twilio['phone_number']
+
             cmd = [
                 "python3",
                 str(self.base_path / "automation/agents/sms-sender/scripts/sms_agent.py"),
@@ -665,6 +828,10 @@ class InteractiveChat:
             if config.get('width'):
                 cmd.extend(["--width", str(config['width'])])
         elif agent_type == "slack":
+            # Set Slack webhook if provided
+            if config.get('slack_webhook_url'):
+                env['SLACK_WEBHOOK_URL'] = config['slack_webhook_url']
+
             cmd = [
                 "python3",
                 str(self.base_path / "automation/agents/slack-notifier/scripts/slack_agent.py"),
