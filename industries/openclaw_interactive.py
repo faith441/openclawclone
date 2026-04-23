@@ -21,7 +21,10 @@ class InteractiveChat:
 
     def check_environment(self):
         """Check for API keys and services."""
+        # For testing, use Claude API (Anthropic)
+        self.has_claude = bool(os.environ.get('ANTHROPIC_API_KEY'))
         self.has_openai = bool(os.environ.get('OPENAI_API_KEY'))
+        self.has_ai = self.has_claude or self.has_openai
         self.has_stripe = bool(os.environ.get('STRIPE_API_KEY'))
         self.has_quickbooks = bool(os.environ.get('QUICKBOOKS_CLIENT_ID'))
         self.has_zillow = bool(os.environ.get('ZILLOW_API_KEY'))
@@ -155,11 +158,12 @@ class InteractiveChat:
         config['publish_mls'] = input("    MLS? (y/n, default: y): ").strip().lower() != 'n'
 
         # AI description
-        if self.has_openai:
-            gen_desc = input("\n🤖 Generate AI description? (y/n, default: y): ").strip().lower()
+        if self.has_ai:
+            ai_provider = "Claude" if self.has_claude else "OpenAI"
+            gen_desc = input(f"\n🤖 Generate AI description using {ai_provider}? (y/n, default: y): ").strip().lower()
             config['ai_description'] = gen_desc != 'n'
         else:
-            print("\n⚠️  OpenAI not configured (set OPENAI_API_KEY)")
+            print("\n⚠️  AI not configured (set ANTHROPIC_API_KEY or OPENAI_API_KEY)")
             config['ai_description'] = False
 
         return config
@@ -209,10 +213,11 @@ class InteractiveChat:
         config['missing_clauses'] = input("  Check for missing clauses? (y/n, default: y): ").strip().lower() != 'n'
         config['generate_redlines'] = input("  Generate redline suggestions? (y/n, default: y): ").strip().lower() != 'n'
 
-        if self.has_openai:
-            config['ai_analysis'] = input("  Use AI for deep analysis? (y/n, default: y): ").strip().lower() != 'n'
+        if self.has_ai:
+            ai_provider = "Claude" if self.has_claude else "OpenAI"
+            config['ai_analysis'] = input(f"  Use {ai_provider} for deep analysis? (y/n, default: y): ").strip().lower() != 'n'
         else:
-            print("  ⚠️  OpenAI not configured (set OPENAI_API_KEY)")
+            print("  ⚠️  AI not configured (set ANTHROPIC_API_KEY or OPENAI_API_KEY)")
             config['ai_analysis'] = False
 
         return config
