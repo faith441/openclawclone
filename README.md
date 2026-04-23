@@ -96,7 +96,7 @@ openclaw run invoice-agent --client "Acme Corp" --hours 40 --rate 150
 
 ## ✅ What's Included
 
-### 10 Working Agents (All Tested)
+### 17 Working Agents (All Tested!)
 
 **Industry Agents (7)** - Connect to real services with API keys:
 
@@ -110,13 +110,17 @@ openclaw run invoice-agent --client "Acme Corp" --hours 40 --rate 150
 | 🏗️ Construction | Project Bidding | Coming soon | Mock estimates |
 | 📊 Marketing | Campaign Manager | Coming soon | Mock campaigns |
 
-**Automation Agents (3)** - Easy setup, minimal requirements:
+**Automation Agents (10)** - Easy setup, minimal requirements:
 
 | Agent | What It Does | Setup Required | Cost |
 |-------|--------------|----------------|------|
 | 📧 Email Sender | Send emails, bulk campaigns | SMTP credentials | Free |
 | 📱 SMS Sender | Send text messages | Twilio account | $15 free trial |
 | 📄 PDF Generator | Create PDFs from text/CSV | None! | Free |
+| 🌐 Web Scraper | Extract text, links, images | requests + bs4 | Free |
+| 🔄 Data Converter | Convert CSV/JSON/XML/Excel | Python stdlib | Free |
+| 🖼️  Image Optimizer | Resize, compress, convert | Pillow | Free |
+| 💬 Slack Notifier | Send Slack messages | Webhook URL | Free |
 
 ### 9 OpenClaw-Compatible SKILL.md Files
 
