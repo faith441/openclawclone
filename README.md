@@ -1,16 +1,28 @@
 # OpenClaw Industry AI Agents
 
-Complete collection of **AI-powered automation agents** for 8 industries, with OpenClaw-compatible installation and a natural language chat interface.
+Complete collection of **AI-powered automation agents** with **real API integrations** for business automation.
+
+## ✨ Real Integrations
+
+All agents connect to real services:
+- ✅ **Finance**: Stripe payments, Email invoicing
+- ✅ **Real Estate**: Claude AI property descriptions
+- ✅ **E-commerce**: Shopify order processing
+- ✅ **Email**: SMTP automation (no API key needed!)
+- ✅ **SMS**: Twilio text messages (free $15 trial)
+- ✅ **PDF**: Generate PDFs (no API key needed!)
+
+**[📖 Complete Setup Guide](industries/SETUP_GUIDE.md)** - API keys, costs, and detailed instructions
 
 ## 🚀 Quick Start
 
-### Option 1: Chat Interface (Recommended)
+### Option 1: Interactive Chat (Recommended)
 
-The easiest way to use the agents - just talk to them naturally!
+Step-by-step wizards that ask for what you need:
 
 ```bash
 cd industries
-python3 openclaw_chat.py
+python3 openclaw_interactive.py
 ```
 
 Then interact in natural language:
@@ -84,19 +96,27 @@ openclaw run invoice-agent --client "Acme Corp" --hours 40 --rate 150
 
 ## ✅ What's Included
 
-### 7 Working Agents (All Tested)
+### 10 Working Agents (All Tested)
 
-All agents work **without API keys** using mock/fake data for testing!
+**Industry Agents (7)** - Connect to real services with API keys:
 
-| Industry | Agent | What It Does | Status |
-|----------|-------|--------------|--------|
-| 💰 Finance | Invoice Generator | Create invoices, track payments, schedule reminders | ✅ WORKING |
-| 🏠 Real Estate | Property Listing | Generate listings, distribute to MLS/Zillow/Realtor | ✅ WORKING |
-| 🛒 E-commerce | Order Processor | Process orders, validate inventory, generate labels | ✅ WORKING |
-| ⚖️ Legal | Contract Review | Analyze contracts, identify risks, suggest redlines | ✅ WORKING |
-| 🏨 Hospitality | Reservation Manager | Book rooms, process payments, send confirmations | ✅ WORKING |
-| 🏗️ Construction | Project Bidding | Estimate costs, generate proposals, calculate win probability | ✅ WORKING |
-| 📊 Marketing | Campaign Manager | Plan campaigns, allocate budget, forecast results | ✅ WORKING |
+| Industry | Agent | Real Integration | Fallback |
+|----------|-------|------------------|----------|
+| 💰 Finance | Invoice Generator | Stripe payments + Email | Mock data |
+| 🏠 Real Estate | Property Listing | Claude AI descriptions | Template |
+| 🛒 E-commerce | Order Processor | Shopify fulfillment | Mock orders |
+| ⚖️ Legal | Contract Review | Coming soon | Mock analysis |
+| 🏨 Hospitality | Reservation Manager | Coming soon | Mock bookings |
+| 🏗️ Construction | Project Bidding | Coming soon | Mock estimates |
+| 📊 Marketing | Campaign Manager | Coming soon | Mock campaigns |
+
+**Automation Agents (3)** - Easy setup, minimal requirements:
+
+| Agent | What It Does | Setup Required | Cost |
+|-------|--------------|----------------|------|
+| 📧 Email Sender | Send emails, bulk campaigns | SMTP credentials | Free |
+| 📱 SMS Sender | Send text messages | Twilio account | $15 free trial |
+| 📄 PDF Generator | Create PDFs from text/CSV | None! | Free |
 
 ### 9 OpenClaw-Compatible SKILL.md Files
 
