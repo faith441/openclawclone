@@ -47,6 +47,10 @@ class InteractiveChat:
         print("  📧 Email - SMTP email automation")
         print("  📱 SMS - Twilio text messages")
         print("  📄 PDF - Generate PDFs from text/CSV")
+        print("  🌐 Web Scraper - Extract text, links, images")
+        print("  🔄 Data Converter - CSV/JSON/XML/Excel")
+        print("  🖼️  Image Optimizer - Resize, compress, convert")
+        print("  💬 Slack Notifier - Send Slack messages")
         print("\n" + "=" * 70)
 
     def setup_wizard(self, agent_type: str):
@@ -74,6 +78,14 @@ class InteractiveChat:
             return self.setup_sms()
         elif agent_type == "pdf":
             return self.setup_pdf()
+        elif agent_type == "web-scraper":
+            return self.setup_web_scraper()
+        elif agent_type == "data-converter":
+            return self.setup_data_converter()
+        elif agent_type == "image-optimizer":
+            return self.setup_image_optimizer()
+        elif agent_type == "slack":
+            return self.setup_slack()
 
     def setup_finance(self):
         """Setup finance agent with real connections."""
@@ -369,6 +381,104 @@ class InteractiveChat:
 
         return config
 
+    def setup_web_scraper(self):
+        """Setup web scraper agent."""
+        print("\n🌐 Let's scrape a website")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n🔗 WEBSITE:")
+        config['url'] = input("  URL to scrape: ").strip() or "https://example.com"
+
+        print("\n📑 SCRAPE MODE:")
+        print("  1. Extract text")
+        print("  2. Extract links")
+        print("  3. Download images")
+        mode_choice = input("  Choose (1-3, default: 1): ").strip()
+        mode_map = {"1": "text", "2": "links", "3": "images"}
+        config['mode'] = mode_map.get(mode_choice, "text")
+
+        if config['mode'] == 'images':
+            config['output'] = input("  Output directory (default: images): ").strip() or "images"
+        else:
+            config['output'] = input("  Save to file (optional, press Enter to skip): ").strip() or None
+
+        return config
+
+    def setup_data_converter(self):
+        """Setup data converter agent."""
+        print("\n🔄 Let's convert data formats")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n📂 FILES:")
+        config['input'] = input("  Input file: ").strip()
+        config['output'] = input("  Output file: ").strip()
+
+        print("\n🔄 FORMAT:")
+        print("  Auto-detected from file extensions")
+        print("  Supported: CSV ↔ JSON, CSV ↔ XML, XML → JSON, CSV ↔ Excel")
+
+        return config
+
+    def setup_image_optimizer(self):
+        """Setup image optimizer agent."""
+        print("\n🖼️  Let's optimize images")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n📂 FILES:")
+        config['input'] = input("  Input file/directory: ").strip()
+        config['output'] = input("  Output file/directory: ").strip()
+
+        print("\n⚙️  MODE:")
+        print("  1. Resize")
+        print("  2. Compress")
+        print("  3. Convert format")
+        print("  4. Create thumbnail")
+        print("  5. Batch optimize")
+        mode_choice = input("  Choose (1-5, default: 2): ").strip()
+        mode_map = {"1": "resize", "2": "compress", "3": "convert", "4": "thumbnail", "5": "batch"}
+        config['mode'] = mode_map.get(mode_choice, "compress")
+
+        if config['mode'] in ['resize', 'batch']:
+            width = input("  Width (optional): ").strip()
+            config['width'] = int(width) if width else None
+
+        quality = input("  Quality 1-100 (default: 85): ").strip()
+        config['quality'] = int(quality) if quality else 85
+
+        return config
+
+    def setup_slack(self):
+        """Setup Slack notifier agent."""
+        print("\n💬 Let's send a Slack message")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n💬 MESSAGE:")
+        config['message'] = input("  Message text: ").strip() or "Hello from OpenClaw!"
+
+        print("\n📊 TYPE:")
+        print("  1. Simple message")
+        print("  2. Alert (success/warning/error)")
+        type_choice = input("  Choose (1-2, default: 1): ").strip()
+
+        if type_choice == "2":
+            print("\n  Alert type:")
+            print("    1. Success")
+            print("    2. Warning")
+            print("    3. Error")
+            alert_choice = input("    Choose (1-3): ").strip()
+            alert_map = {"1": "success", "2": "warning", "3": "error"}
+            config['alert'] = alert_map.get(alert_choice, "info")
+
+        return config
+
     def run_agent(self, agent_type: str, config: dict):
         """Execute the agent with real configuration."""
         print("\n" + "=" * 70)
@@ -466,6 +576,46 @@ class InteractiveChat:
                     "--output", config['output'],
                     "--title", config['title']
                 ]
+        elif agent_type == "web-scraper":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/web-scraper/scripts/scraper_agent.py"),
+                "--url", config['url'],
+                "--mode", config['mode']
+            ]
+            if config.get('output'):
+                cmd.extend(["--output", config['output']])
+        elif agent_type == "data-converter":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/data-converter/scripts/converter_agent.py"),
+                "--input", config['input'],
+                "--output", config['output']
+            ]
+        elif agent_type == "image-optimizer":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/image-optimizer/scripts/image_agent.py"),
+                "--input", config['input'],
+                "--output", config['output'],
+                "--mode", config['mode'],
+                "--quality", str(config['quality'])
+            ]
+            if config.get('width'):
+                cmd.extend(["--width", str(config['width'])])
+        elif agent_type == "slack":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/slack-notifier/scripts/slack_agent.py"),
+                "--message", config['message']
+            ]
+            if config.get('alert'):
+                cmd = [
+                    "python3",
+                    str(self.base_path / "automation/agents/slack-notifier/scripts/slack_agent.py"),
+                    "--alert", config['alert'],
+                    "--text", config['message']
+                ]
         else:
             print(f"❌ Unknown agent type: {agent_type}")
             return
@@ -503,13 +653,17 @@ class InteractiveChat:
                 print("  8. 📧 Send Email")
                 print("  9. 📱 Send SMS")
                 print("  10. 📄 Generate PDF")
+                print("  11. 🌐 Scrape Website")
+                print("  12. 🔄 Convert Data Formats")
+                print("  13. 🖼️  Optimize Images")
+                print("  14. 💬 Send Slack Message")
                 print("")
-                print("  11. ❌ Exit")
+                print("  15. ❌ Exit")
                 print("-" * 70)
 
-                choice = input("\nSelect (1-11): ").strip()
+                choice = input("\nSelect (1-15): ").strip()
 
-                if choice == '11' or choice.lower() in ['exit', 'quit', 'q']:
+                if choice == '15' or choice.lower() in ['exit', 'quit', 'q']:
                     print("\n👋 Thanks for using OpenClaw! Goodbye!\n")
                     break
 
@@ -523,13 +677,17 @@ class InteractiveChat:
                     '7': 'marketing',
                     '8': 'email',
                     '9': 'sms',
-                    '10': 'pdf'
+                    '10': 'pdf',
+                    '11': 'web-scraper',
+                    '12': 'data-converter',
+                    '13': 'image-optimizer',
+                    '14': 'slack'
                 }
 
                 agent_type = agent_map.get(choice)
 
                 if not agent_type:
-                    print("\n❌ Invalid choice. Please select 1-11.")
+                    print("\n❌ Invalid choice. Please select 1-15.")
                     continue
 
                 # Run setup wizard
