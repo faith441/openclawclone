@@ -2,15 +2,64 @@
 
 Complete AI agent codebases tailored for specific industries. Each industry has specialized agents that handle common workflows, automations, and business processes.
 
-## ✅ Working Agents (Tested)
+## ✅ ALL 7 Working Agents (Tested with Fake Data)
 
-**💰 Finance - Invoice Generator** - FULLY FUNCTIONAL
+All agents work without requiring real API keys!
+
+### 💰 Finance - Invoice Generator
 ```bash
 cd industries/finance/agents/invoice-generator
 python3 scripts/invoice_agent.py --client "Acme Corp" --hours 40 --rate 150
 # ✓ Invoice created: INV-2026-001
 # ✓ Amount: $6,000.00
-# ✓ Sent to: billing@example.com
+```
+
+### 🏠 Real Estate - Property Listing
+```bash
+cd industries/real-estate/agents/listing-agent
+python3 scripts/listing_agent.py --address "123 Main St, SF, CA" --price 1250000
+# ✓ Listing ID: L-2026-12345
+# ✓ Listed on: Zillow, Realtor.com, MLS
+```
+
+### 🛒 E-commerce - Order Processor
+```bash
+cd industries/ecommerce/agents/order-processor
+python3 scripts/order_agent.py --count 15
+# ✓ 15 new orders found
+# ✓ Payments captured: $1,449.85
+```
+
+### ⚖️ Legal - Contract Review
+```bash
+cd industries/legal/agents/contract-review
+python3 scripts/contract_agent.py --file vendor_agreement.pdf
+# ✓ Risks found: 1 HIGH, 1 MEDIUM
+# ✓ Redline suggestions generated
+```
+
+### 🏨 Hospitality - Reservation Manager
+```bash
+cd industries/hospitality/agents/reservation-agent
+python3 scripts/reservation_agent.py --guest "John Smith"
+# ✓ Room assigned: #512
+# ✓ Payment processed: $897.00
+```
+
+### 🏗️ Construction - Project Bidding
+```bash
+cd industries/construction/agents/bidding-agent
+python3 scripts/bidding_agent.py --project "Smith Residence Remodel"
+# ✓ Total bid: $285,000.00
+# ✓ Win probability: 68%
+```
+
+### 📊 Marketing - Campaign Manager
+```bash
+cd industries/marketing/agents/campaign-manager
+python3 scripts/campaign_agent.py --product "AI CRM" --budget 50000
+# ✓ Expected leads: 750
+# ✓ Expected ROAS: 3.2x
 ```
 
 ## Industries
