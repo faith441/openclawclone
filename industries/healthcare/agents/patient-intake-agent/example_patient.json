@@ -1,0 +1,12 @@
+{
+  "first_name": "Sarah",
+  "last_name": "Johnson",
+  "dob": "1985-03-15",
+  "email": "sarah.johnson@example.com",
+  "phone": "555-0123",
+  "address": "123 Main St, San Francisco, CA 94102",
+  "insurance_provider": "Blue Cross Blue Shield",
+  "insurance_id": "ABC123456789",
+  "insurance_group": "GRP001",
+  "medical_history_text": "Patient has type 2 diabetes, currently taking Metformin 500mg twice daily. Allergic to penicillin and sulfa drugs. Had appendectomy in 2010. Family history of heart disease (father had MI at age 62). No surgeries in past 5 years."
+}

@@ -2,6 +2,17 @@
 
 Complete AI agent codebases tailored for specific industries. Each industry has specialized agents that handle common workflows, automations, and business processes.
 
+## ✅ Working Agents (Tested)
+
+**💰 Finance - Invoice Generator** - FULLY FUNCTIONAL
+```bash
+cd industries/finance/agents/invoice-generator
+python3 scripts/invoice_agent.py --client "Acme Corp" --hours 40 --rate 150
+# ✓ Invoice created: INV-2026-001
+# ✓ Amount: $6,000.00
+# ✓ Sent to: billing@example.com
+```
+
 ## Industries
 
 ### 🏥 [Healthcare](./healthcare/)
