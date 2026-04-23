@@ -120,24 +120,71 @@ class InteractiveChat:
 
         # Integration options
         print("\n🔗 INTEGRATIONS:")
-        if self.has_quickbooks:
-            sync_qb = input("  Sync to QuickBooks? (y/n, default: y): ").strip().lower()
-            config['sync_quickbooks'] = sync_qb != 'n'
-        else:
-            print("  ⚠️  QuickBooks not configured (set QUICKBOOKS_CLIENT_ID)")
-            config['sync_quickbooks'] = False
 
+        # Stripe setup
         if self.has_stripe:
             send_stripe = input("  Send Stripe payment link? (y/n, default: y): ").strip().lower()
             config['send_stripe_link'] = send_stripe != 'n'
+            config['stripe_api_key'] = None  # Already set in environment
         else:
-            print("  ⚠️  Stripe not configured (set STRIPE_API_KEY)")
-            config['send_stripe_link'] = False
+            print("  ⚠️  Stripe not configured")
+            setup_stripe = input("  Would you like to set up Stripe now? (y/n): ").strip().lower()
+            if setup_stripe == 'y':
+                print("\n  📝 Get your Stripe API key:")
+                print("     1. Go to https://dashboard.stripe.com/apikeys")
+                print("     2. Copy your 'Secret key' (starts with sk_test_ or sk_live_)")
+                stripe_key = input("\n  Paste your Stripe API key (or press Enter to skip): ").strip()
+                if stripe_key:
+                    config['stripe_api_key'] = stripe_key
+                    config['send_stripe_link'] = True
+                    print("  ✅ Stripe configured for this session!")
+                else:
+                    config['send_stripe_link'] = False
+                    config['stripe_api_key'] = None
+            else:
+                config['send_stripe_link'] = False
+                config['stripe_api_key'] = None
+
+        # QuickBooks setup
+        if self.has_quickbooks:
+            sync_qb = input("  Sync to QuickBooks? (y/n, default: y): ").strip().lower()
+            config['sync_quickbooks'] = sync_qb != 'n'
+            config['quickbooks_client_id'] = None
+        else:
+            print("  ⚠️  QuickBooks not configured (coming soon)")
+            config['sync_quickbooks'] = False
+            config['quickbooks_client_id'] = None
 
         # Email options
         print("\n📧 EMAIL OPTIONS:")
-        send_email = input("  Send invoice via email? (y/n, default: y): ").strip().lower()
-        config['send_email'] = send_email != 'n'
+        if self.has_email:
+            send_email = input("  Send invoice via email? (y/n, default: y): ").strip().lower()
+            config['send_email'] = send_email != 'n'
+            config['smtp_config'] = None  # Already set in environment
+        else:
+            print("  ⚠️  Email (SMTP) not configured")
+            setup_email = input("  Would you like to set up email now? (y/n): ").strip().lower()
+            if setup_email == 'y':
+                print("\n  📝 Enter your SMTP settings:")
+                print("     For Gmail: smtp.gmail.com, port 587")
+                print("     Get app password: https://myaccount.google.com/apppasswords")
+
+                smtp_config = {}
+                smtp_config['host'] = input("\n  SMTP Host (default: smtp.gmail.com): ").strip() or "smtp.gmail.com"
+                smtp_config['port'] = input("  SMTP Port (default: 587): ").strip() or "587"
+                smtp_config['user'] = input("  Email address: ").strip()
+                smtp_config['password'] = input("  Password/App Password: ").strip()
+
+                if smtp_config['user'] and smtp_config['password']:
+                    config['smtp_config'] = smtp_config
+                    config['send_email'] = True
+                    print("  ✅ Email configured for this session!")
+                else:
+                    config['send_email'] = False
+                    config['smtp_config'] = None
+            else:
+                config['send_email'] = False
+                config['smtp_config'] = None
 
         return config
 
@@ -485,8 +532,22 @@ class InteractiveChat:
         print(f"🚀 Running {agent_type.title()} Agent...")
         print("=" * 70 + "\n")
 
+        # Prepare environment variables for this execution
+        env = os.environ.copy()
+
         # Build command based on agent type
         if agent_type == "finance":
+            # Set credentials from config if provided
+            if config.get('stripe_api_key'):
+                env['STRIPE_API_KEY'] = config['stripe_api_key']
+
+            if config.get('smtp_config'):
+                smtp = config['smtp_config']
+                env['SMTP_HOST'] = smtp['host']
+                env['SMTP_PORT'] = smtp['port']
+                env['SMTP_USER'] = smtp['user']
+                env['SMTP_PASS'] = smtp['password']
+
             cmd = [
                 "python3",
                 str(self.base_path / "finance/agents/invoice-generator/scripts/invoice_agent.py"),
@@ -622,7 +683,7 @@ class InteractiveChat:
 
         # Execute
         try:
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            result = subprocess.run(cmd, capture_output=True, text=True, env=env)
             print(result.stdout)
 
             if result.returncode != 0 and result.stderr:
