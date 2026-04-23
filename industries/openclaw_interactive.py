@@ -35,14 +35,18 @@ class InteractiveChat:
         print("  🤖 OpenClaw Interactive AI Agents")
         print("  Connect to Real Services & Automate Your Business")
         print("=" * 70)
-        print("\nAvailable Agents:")
-        print("  💰 Finance - Invoice generation, payment tracking")
-        print("  🏠 Real Estate - Property listings, lead management")
-        print("  🛒 E-commerce - Order processing, inventory")
+        print("\nIndustry Agents:")
+        print("  💰 Finance - Invoice generation, Stripe payments")
+        print("  🏠 Real Estate - AI property listings, Claude-powered")
+        print("  🛒 E-commerce - Shopify order processing")
         print("  ⚖️ Legal - Contract review, document automation")
         print("  🏨 Hospitality - Reservations, guest management")
         print("  🏗️ Construction - Project bidding, scheduling")
         print("  📊 Marketing - Campaign management, analytics")
+        print("\nAutomation Agents (Easy Setup!):")
+        print("  📧 Email - SMTP email automation")
+        print("  📱 SMS - Twilio text messages")
+        print("  📄 PDF - Generate PDFs from text/CSV")
         print("\n" + "=" * 70)
 
     def setup_wizard(self, agent_type: str):
@@ -64,6 +68,12 @@ class InteractiveChat:
             return self.setup_construction()
         elif agent_type == "marketing":
             return self.setup_marketing()
+        elif agent_type == "email":
+            return self.setup_email()
+        elif agent_type == "sms":
+            return self.setup_sms()
+        elif agent_type == "pdf":
+            return self.setup_pdf()
 
     def setup_finance(self):
         """Setup finance agent with real connections."""
@@ -304,6 +314,61 @@ class InteractiveChat:
 
         return config
 
+    def setup_email(self):
+        """Setup email automation agent."""
+        print("\n📧 Let's send an email")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n📬 EMAIL DETAILS:")
+        config['to'] = input("  To (email address): ").strip() or "recipient@example.com"
+        config['subject'] = input("  Subject: ").strip() or "Test Email"
+        config['body'] = input("  Message: ").strip() or "This is a test email from OpenClaw!"
+
+        print("\n⚙️  OPTIONS:")
+        config['html'] = input("  Send as HTML? (y/n, default: n): ").strip().lower() == 'y'
+
+        return config
+
+    def setup_sms(self):
+        """Setup SMS notification agent."""
+        print("\n📱 Let's send an SMS")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n💬 SMS DETAILS:")
+        config['to'] = input("  To (phone with country code, e.g., +1234567890): ").strip() or "+11234567890"
+        config['message'] = input("  Message: ").strip() or "Test SMS from OpenClaw!"
+
+        return config
+
+    def setup_pdf(self):
+        """Setup PDF generator agent."""
+        print("\n📄 Let's generate a PDF")
+        print("-" * 50)
+
+        config = {}
+
+        print("\n📑 PDF TYPE:")
+        print("  1. Text to PDF")
+        print("  2. CSV to PDF Table")
+        pdf_choice = input("  Choose (1-2, default: 1): ").strip()
+
+        if pdf_choice == "2":
+            config['mode'] = 'csv'
+            config['csv_file'] = input("  CSV file path: ").strip()
+            config['title'] = input("  PDF title (default: Table Report): ").strip() or "Table Report"
+        else:
+            config['mode'] = 'text'
+            config['text'] = input("  Text content: ").strip() or "Sample PDF content from OpenClaw."
+            config['title'] = input("  PDF title (default: Document): ").strip() or "Document"
+
+        config['output'] = input("  Output filename (default: output.pdf): ").strip() or "output.pdf"
+
+        return config
+
     def run_agent(self, agent_type: str, config: dict):
         """Execute the agent with real configuration."""
         print("\n" + "=" * 70)
@@ -367,6 +432,40 @@ class InteractiveChat:
                 "--budget", str(config['budget']),
                 "--duration", config['duration']
             ]
+        elif agent_type == "email":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/email-sender/scripts/email_agent.py"),
+                "--to", config['to'],
+                "--subject", config['subject'],
+                "--body", config['body']
+            ]
+            if config.get('html'):
+                cmd.append("--html")
+        elif agent_type == "sms":
+            cmd = [
+                "python3",
+                str(self.base_path / "automation/agents/sms-sender/scripts/sms_agent.py"),
+                "--to", config['to'],
+                "--message", config['message']
+            ]
+        elif agent_type == "pdf":
+            if config['mode'] == 'csv':
+                cmd = [
+                    "python3",
+                    str(self.base_path / "automation/agents/pdf-generator/scripts/pdf_agent.py"),
+                    "--csv", config['csv_file'],
+                    "--output", config['output'],
+                    "--title", config['title']
+                ]
+            else:
+                cmd = [
+                    "python3",
+                    str(self.base_path / "automation/agents/pdf-generator/scripts/pdf_agent.py"),
+                    "--text", config['text'],
+                    "--output", config['output'],
+                    "--title", config['title']
+                ]
         else:
             print(f"❌ Unknown agent type: {agent_type}")
             return
@@ -391,6 +490,7 @@ class InteractiveChat:
                 print("\n" + "=" * 70)
                 print("What would you like to do?")
                 print("-" * 70)
+                print("  INDUSTRY AGENTS:")
                 print("  1. 💰 Create Invoice (Finance)")
                 print("  2. 🏠 Create Property Listing (Real Estate)")
                 print("  3. 🛒 Process Orders (E-commerce)")
@@ -398,12 +498,18 @@ class InteractiveChat:
                 print("  5. 🏨 Make Reservation (Hospitality)")
                 print("  6. 🏗️  Prepare Bid (Construction)")
                 print("  7. 📊 Create Campaign (Marketing)")
-                print("  8. ❌ Exit")
+                print("")
+                print("  AUTOMATION AGENTS (Easy Setup!):")
+                print("  8. 📧 Send Email")
+                print("  9. 📱 Send SMS")
+                print("  10. 📄 Generate PDF")
+                print("")
+                print("  11. ❌ Exit")
                 print("-" * 70)
 
-                choice = input("\nSelect (1-8): ").strip()
+                choice = input("\nSelect (1-11): ").strip()
 
-                if choice == '8' or choice.lower() in ['exit', 'quit', 'q']:
+                if choice == '11' or choice.lower() in ['exit', 'quit', 'q']:
                     print("\n👋 Thanks for using OpenClaw! Goodbye!\n")
                     break
 
@@ -414,13 +520,16 @@ class InteractiveChat:
                     '4': 'legal',
                     '5': 'hospitality',
                     '6': 'construction',
-                    '7': 'marketing'
+                    '7': 'marketing',
+                    '8': 'email',
+                    '9': 'sms',
+                    '10': 'pdf'
                 }
 
                 agent_type = agent_map.get(choice)
 
                 if not agent_type:
-                    print("\n❌ Invalid choice. Please select 1-8.")
+                    print("\n❌ Invalid choice. Please select 1-11.")
                     continue
 
                 # Run setup wizard
