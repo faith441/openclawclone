@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-OpenClaw Interactive Chat - Connects to Real Services
+Zenthral Interactive Chat - Connects to Real Services
 
 This version:
 - Asks users for requirements interactively
@@ -32,7 +32,7 @@ class InteractiveChat:
     def print_header(self):
         """Print welcome header."""
         print("\n" + "=" * 70)
-        print("  🤖 OpenClaw Interactive AI Agents")
+        print("  🤖 Zenthral Interactive AI Agents")
         print("  Connect to Real Services & Automate Your Business")
         print("=" * 70)
         print("\nIndustry Agents:")
@@ -470,7 +470,7 @@ class InteractiveChat:
         print("\n📬 EMAIL DETAILS:")
         config['to'] = input("  To (email address): ").strip() or "recipient@example.com"
         config['subject'] = input("  Subject: ").strip() or "Test Email"
-        config['body'] = input("  Message: ").strip() or "This is a test email from OpenClaw!"
+        config['body'] = input("  Message: ").strip() or "This is a test email from Zenthral!"
 
         print("\n⚙️  OPTIONS:")
         config['html'] = input("  Send as HTML? (y/n, default: n): ").strip().lower() == 'y'
@@ -511,7 +511,7 @@ class InteractiveChat:
 
         print("\n💬 SMS DETAILS:")
         config['to'] = input("  To (phone with country code, e.g., +1234567890): ").strip() or "+11234567890"
-        config['message'] = input("  Message: ").strip() or "Test SMS from OpenClaw!"
+        config['message'] = input("  Message: ").strip() or "Test SMS from Zenthral!"
 
         return config
 
@@ -533,7 +533,7 @@ class InteractiveChat:
             config['title'] = input("  PDF title (default: Table Report): ").strip() or "Table Report"
         else:
             config['mode'] = 'text'
-            config['text'] = input("  Text content: ").strip() or "Sample PDF content from OpenClaw."
+            config['text'] = input("  Text content: ").strip() or "Sample PDF content from Zenthral."
             config['title'] = input("  PDF title (default: Document): ").strip() or "Document"
 
         config['output'] = input("  Output filename (default: output.pdf): ").strip() or "output.pdf"
@@ -644,7 +644,7 @@ class InteractiveChat:
             config['slack_webhook_url'] = None  # Already set in environment
 
         print("\n💬 MESSAGE:")
-        config['message'] = input("  Message text: ").strip() or "Hello from OpenClaw!"
+        config['message'] = input("  Message text: ").strip() or "Hello from Zenthral!"
 
         print("\n📊 TYPE:")
         print("  1. Simple message")
@@ -892,7 +892,7 @@ class InteractiveChat:
                 choice = input("\nSelect (1-15): ").strip()
 
                 if choice == '15' or choice.lower() in ['exit', 'quit', 'q']:
-                    print("\n👋 Thanks for using OpenClaw! Goodbye!\n")
+                    print("\n👋 Thanks for using Zenthral! Goodbye!\n")
                     break
 
                 agent_map = {

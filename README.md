@@ -1,4 +1,4 @@
-# OpenClaw Industry AI Agents
+# Zenthral AI Agents
 
 Complete collection of **AI-powered automation agents** with **real API integrations** for business automation.
 
@@ -22,7 +22,7 @@ Step-by-step wizards that ask for what you need:
 
 ```bash
 cd industries
-python3 openclaw_interactive.py
+python3 zenthral_interactive.py
 ```
 
 Then interact in natural language:
@@ -77,9 +77,9 @@ cd industries/marketing/agents/campaign-manager
 python3 scripts/campaign_agent.py --product "AI CRM" --budget 50000
 ```
 
-### Option 3: Via OpenClaw (When Published)
+### Option 3: Via Zenthral CLI (When Published)
 
-Install via OpenClaw's skill system:
+Install via Zenthral's skill system:
 
 ```bash
 # Search for skills
@@ -122,9 +122,9 @@ openclaw run invoice-agent --client "Acme Corp" --hours 40 --rate 150
 | 🖼️  Image Optimizer | Resize, compress, convert | Pillow | Free |
 | 💬 Slack Notifier | Send Slack messages | Webhook URL | Free |
 
-### 9 OpenClaw-Compatible SKILL.md Files
+### 9 Zenthral-Compatible SKILL.md Files
 
-All industries have proper `SKILL.md` files for installation via OpenClaw:
+All industries have proper `SKILL.md` files for installation via Zenthral:
 
 - 🏥 Healthcare Agents
 - 💰 Finance Agents
@@ -326,7 +326,7 @@ openclawclone/
 │   ├── README.md                     # Industry agents overview
 │   │
 │   ├── finance/
-│   │   ├── SKILL.md                 # OpenClaw installable
+│   │   ├── SKILL.md                 # Zenthral installable
 │   │   └── agents/
 │   │       └── invoice-generator/
 │   │           └── scripts/
@@ -383,7 +383,7 @@ openclawclone/
 │               │   └── intake_agent.py   (needs venv setup)
 │               └── example_patient.json
 │
-└── skills/                           # 87 core OpenClaw skills
+└── skills/                           # 87 core Zenthral skills
     └── [various skills...]
 ```
 
@@ -399,9 +399,9 @@ All agents work with **fake/mock data** for testing and demonstration:
 - ✅ No database setup required
 - ✅ Instant testing and experimentation
 
-### OpenClaw Compatible
+### Zenthral Compatible
 
-All skills follow OpenClaw's installation format:
+All skills follow Zenthral's installation format:
 - ✅ Proper `SKILL.md` frontmatter with metadata
 - ✅ Installation instructions via `uv` package manager
 - ✅ Requirements and dependencies specified
@@ -428,7 +428,7 @@ All agents return structured JSON for easy integration:
 ## 📚 Documentation
 
 - **[Industries README](./industries/README.md)** - Detailed documentation for all agents
-- **[SKILL.md files](./industries/)** - OpenClaw-compatible skill manifests for each industry
+- **[SKILL.md files](./industries/)** - Zenthral-compatible skill manifests for each industry
 - **Individual agent READMEs** - Specific documentation for each agent
 
 ---
@@ -496,7 +496,7 @@ All agents follow the same pattern. To create a new agent:
 | Feature | Count | Status |
 |---------|-------|--------|
 | **Working Agents** | 7 | ✅ All tested |
-| **SKILL.md Files** | 9 | ✅ OpenClaw compatible |
+| **SKILL.md Files** | 9 | ✅ Zenthral compatible |
 | **Chat Interface** | 1 | ✅ Natural language |
 | **Core Skills** | 87 | ✅ Documented |
 | **Industries** | 8 | ✅ Complete |
