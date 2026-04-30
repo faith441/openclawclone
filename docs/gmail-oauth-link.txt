@@ -1,0 +1,47 @@
+# Gmail OAuth Direct Login Link
+
+## For n8n (Local)
+Replace YOUR_CLIENT_ID with your actual Client ID from Google Cloud Console:
+
+https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=http://localhost:5678/rest/oauth2-credential/callback&response_type=code&scope=https://www.googleapis.com/auth/gmail.send%20https://www.googleapis.com/auth/gmail.readonly%20https://www.googleapis.com/auth/gmail.modify&access_type=offline&prompt=consent
+
+## For n8n (Production)
+Replace YOUR_CLIENT_ID and YOUR_DOMAIN:
+
+https://accounts.google.com/o/oauth2/v2/auth?client_id=YOUR_CLIENT_ID&redirect_uri=https://YOUR_DOMAIN/rest/oauth2-credential/callback&response_type=code&scope=https://www.googleapis.com/auth/gmail.send%20https://www.googleapis.com/auth/gmail.readonly%20https://www.googleapis.com/auth/gmail.modify&access_type=offline&prompt=consent
+
+## Parameters Explained:
+
+client_id          = Your Google OAuth Client ID
+redirect_uri       = Where to send user after authentication
+response_type      = code (for authorization code flow)
+scope              = Gmail permissions needed
+access_type        = offline (to get refresh token)
+prompt             = consent (force consent screen every time)
+
+## How to Use:
+
+1. Replace YOUR_CLIENT_ID with your actual Client ID
+2. Update redirect_uri if not using localhost:5678
+3. Send this link to your boss
+4. They click it → Sign in with Google → Grant permissions
+5. They get redirected back to n8n
+
+## Example with Real Client ID:
+
+https://accounts.google.com/o/oauth2/v2/auth?client_id=123456789-abc123def456.apps.googleusercontent.com&redirect_uri=http://localhost:5678/rest/oauth2-credential/callback&response_type=code&scope=https://www.googleapis.com/auth/gmail.send%20https://www.googleapis.com/auth/gmail.readonly%20https://www.googleapis.com/auth/gmail.modify&access_type=offline&prompt=consent
+
+## Share Methods:
+
+EMAIL:
+Subject: Gmail Integration Login
+Body: Click this link to connect your Gmail account: [paste link]
+
+SLACK:
+Hey! Please click this link to authenticate Gmail: [paste link]
+
+QR CODE:
+Use a QR generator like qr-code-generator.com to create a scannable QR code
+
+SHORTENED URL:
+Use bit.ly or tinyurl.com to shorten the long URL

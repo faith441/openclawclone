@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Choose Your AI{% endblock %}
+
+{% block content %}
+<div class="stepper">
+    <div class="step">
+        <div class="step-circle completed">1</div>
+        <span class="step-text">Choose Plan</span>
+    </div>
+    <div class="step-line completed"></div>
+    <div class="step">
+        <div class="step-circle completed">2</div>
+        <span class="step-text">Setup Zenthral</span>
+    </div>
+    <div class="step-line completed"></div>
+    <div class="step">
+        <div class="step-circle active">3</div>
+        <span class="step-text">Choose AI</span>
+    </div>
+</div>
+
+<div class="page-header">
+    <h1 class="page-title">Choose Your AI</h1>
+    <p class="page-subtitle">Hosting is all set! AI runs on its own usage - just pick how you'd like to connect.</p>
+</div>
+
+<!-- AI Mode Card -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-icon">&#x1F916;</span>
+        <span class="card-title">AI Mode</span>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">AI Source</label>
+        <div class="provider-option selected" data-source="zenthral">
+            <div class="provider-info">
+                <div class="provider-radio"></div>
+                <span class="provider-name">Zenthral API</span>
+                <span class="badge badge-recommended">Recommended</span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 13px;">Pay as you go - no API key needed</span>
+        </div>
+        <div class="provider-option" data-source="custom">
+            <div class="provider-info">
+                <div class="provider-radio"></div>
+                <span class="provider-name">Custom API</span>
+            </div>
+            <span style="color: var(--text-muted); font-size: 13px;">Use your own API keys</span>
+        </div>
+    </div>
+
+    <div class="form-group" style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+            <label class="form-label">Provider</label>
+            <select class="form-select" id="provider-select">
+                {% for key, provider in providers.items() %}
+                <option value="{{ key }}" {% if provider.recommended %}selected{% endif %}>
+                    {{ provider.name }} {% if provider.recommended %}(Recommended){% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <label class="form-label">Model</label>
+            <select class="form-select" id="model-select">
+                {% for key, provider in providers.items() %}
+                    {% for model in provider.models %}
+                    <option value="{{ model.id }}" data-provider="{{ key }}"
+                            data-input="{{ model.input_price }}" data-output="{{ model.output_price }}"
+                            {% if model.new %}data-new="true"{% endif %}>
+                        {{ model.name }} {% if model.new %}(NEW){% endif %}
+                    </option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="pricing-box">
+        <div class="pricing-header">
+            <span style="color: var(--accent-green);">&#x2193;</span>
+            <span>Save up to 10% compared to official pricing</span>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-item">
+                <div class="pricing-label">Input / 1M tokens</div>
+                <div>
+                    <span class="pricing-value" id="input-price">$3.0000</span>
+                    <span class="pricing-original" id="input-original">$3.3000</span>
+                    <span class="pricing-discount">-10%</span>
+                </div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-label">Output / 1M tokens</div>
+                <div>
+                    <span class="pricing-value" id="output-price">$15.0000</span>
+                    <span class="pricing-original" id="output-original">$16.5000</span>
+                    <span class="pricing-discount">-10%</span>
+                </div>
+            </div>
+            <div class="pricing-item">
+                <div class="pricing-label">Cache Read / 1M tokens</div>
+                <div>
+                    <span class="pricing-value">$0.2250</span>
+                    <span class="pricing-original">$0.2500</span>
+                    <span class="pricing-discount">-10%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Backup Model Card -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Backup Model</span>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 16px;">
+        If the primary model is unavailable, Zenthral will automatically switch to this model.
+    </p>
+    <select class="form-select" id="backup-model-select">
+        <option value="claude-opus-4-5">claude-opus-4.5</option>
+        <option value="claude-sonnet-4" selected>claude-sonnet-4</option>
+        <option value="claude-3-5-sonnet">claude-3.5-sonnet</option>
+        <option value="gpt-4o">gpt-4o</option>
+        <option value="gpt-4-turbo">gpt-4-turbo</option>
+    </select>
+</div>
+
+<!-- System Fallback Card -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <div class="card-title" style="margin-bottom: 8px;">System Fallback</div>
+            <p style="color: var(--text-secondary); font-size: 14px; margin: 0;">
+                When enabled, Zenthral will automatically use a fallback model if both primary and backup models are unavailable.
+            </p>
+        </div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="system-fallback" checked>
+            <span class="toggle-slider"></span>
+        </label>
+    </div>
+</div>
+
+<!-- Billing Card -->
+<div class="card" id="billing-card">
+    <div class="card-header">
+        <span class="card-icon" style="color: var(--accent-primary);">&#x1F4B3;</span>
+        <span class="card-title">Billing</span>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <div class="toggle-buttons">
+            <button class="toggle-btn active" data-method="one-time">One-time top-up</button>
+            <button class="toggle-btn" data-method="automatic">Automatic top-up</button>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Top up amount</label>
+        <div class="amount-input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input type="number" class="form-input amount-input" id="topup-amount" value="20" min="5">
+        </div>
+        <div class="amount-presets">
+            <button class="preset-btn" data-amount="10">$10</button>
+            <button class="preset-btn active" data-amount="20">$20</button>
+            <button class="preset-btn" data-amount="50">$50</button>
+            <button class="preset-btn" data-amount="100">$100</button>
+        </div>
+    </div>
+
+    <div id="auto-topup-settings" style="display: none;">
+        <div class="form-group">
+            <label class="form-label">Auto top-up when balance falls below</label>
+            <div class="amount-input-wrapper">
+                <span class="currency-symbol">$</span>
+                <input type="number" class="form-input amount-input" id="threshold-amount" value="5" min="1">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom API Card -->
+<div class="card" id="custom-api-card" style="display: none;">
+    <div class="card-header">
+        <span class="card-icon">&#x1F511;</span>
+        <span class="card-title">Your Own API Keys</span>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+        Use your own API keys from each provider. You'll be billed directly by the provider.
+    </p>
+
+    <div class="form-group">
+        <label class="form-label">Anthropic API Key</label>
+        <input type="password" class="form-input" id="anthropic-key-input" placeholder="sk-ant-api03-...">
+        <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+            Get your key from <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color: var(--accent-primary);">console.anthropic.com</a>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">OpenAI API Key</label>
+        <input type="password" class="form-input" id="openai-key-input" placeholder="sk-proj-...">
+        <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+            Get your key from <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--accent-primary);">platform.openai.com</a>
+        </p>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">Google AI API Key <span style="color: var(--text-muted);">(Optional)</span></label>
+        <input type="password" class="form-input" id="google-key-input" placeholder="AIza...">
+        <p style="color: var(--text-muted); font-size: 12px; margin-top: 6px;">
+            Get your key from <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--accent-primary);">aistudio.google.com</a>
+        </p>
+    </div>
+
+    <div class="info-box" style="background: rgba(255, 68, 68, 0.1); border: 1px solid rgba(255, 68, 68, 0.3); border-radius: 8px; padding: 12px; margin-top: 16px;">
+        <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">
+            <strong style="color: var(--accent-primary);">Note:</strong> Your API keys are stored securely in your browser session and are never sent to our servers. You'll be billed directly by each provider based on their pricing.
+        </p>
+    </div>
+</div>
+
+<div style="display: flex; justify-content: center; gap: 16px; margin-top: 32px;">
+    <button class="btn btn-secondary">&#x2190; Back</button>
+    <button class="btn btn-primary" onclick="saveAIConfig()">Continue &#x2192;</button>
+</div>
+
+<script>
+// Provider selection
+document.querySelectorAll('.provider-option').forEach(option => {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.provider-option').forEach(o => o.classList.remove('selected'));
+        this.classList.add('selected');
+
+        const source = this.dataset.source;
+        const customCard = document.getElementById('custom-api-card');
+        const billingCard = document.getElementById('billing-card');
+
+        customCard.style.display = source === 'custom' ? 'block' : 'none';
+        billingCard.style.display = source === 'custom' ? 'none' : 'block';
+    });
+});
+
+// Model selection
+const providerSelect = document.getElementById('provider-select');
+const modelSelect = document.getElementById('model-select');
+
+providerSelect.addEventListener('change', function() {
+    const provider = this.value;
+    const options = modelSelect.querySelectorAll('option');
+    let firstVisible = null;
+
+    options.forEach(opt => {
+        if (opt.dataset.provider === provider) {
+            opt.style.display = 'block';
+            if (!firstVisible) firstVisible = opt;
+        } else {
+            opt.style.display = 'none';
+        }
+    });
+
+    if (firstVisible) {
+        modelSelect.value = firstVisible.value;
+        updatePricing();
+    }
+});
+
+modelSelect.addEventListener('change', updatePricing);
+
+function updatePricing() {
+    const selected = modelSelect.options[modelSelect.selectedIndex];
+    const inputPrice = parseFloat(selected.dataset.input) || 0;
+    const outputPrice = parseFloat(selected.dataset.output) || 0;
+
+    document.getElementById('input-price').textContent = '$' + inputPrice.toFixed(4);
+    document.getElementById('output-price').textContent = '$' + outputPrice.toFixed(4);
+    document.getElementById('input-original').textContent = '$' + (inputPrice * 1.1).toFixed(4);
+    document.getElementById('output-original').textContent = '$' + (outputPrice * 1.1).toFixed(4);
+}
+
+// Payment method toggle
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const autoSettings = document.getElementById('auto-topup-settings');
+        autoSettings.style.display = this.dataset.method === 'automatic' ? 'block' : 'none';
+    });
+});
+
+// Amount presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('topup-amount').value = this.dataset.amount;
+    });
+});
+
+// Amount input sync
+document.getElementById('topup-amount').addEventListener('input', function() {
+    document.querySelectorAll('.preset-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.amount === this.value);
+    });
+});
+
+function saveAIConfig() {
+    const provider = providerSelect.value;
+    const model = modelSelect.value;
+    const backupModel = document.getElementById('backup-model-select').value;
+    const systemFallback = document.getElementById('system-fallback').checked;
+    const topupAmount = document.getElementById('topup-amount').value;
+    const useCustomApi = document.querySelector('.provider-option.selected').dataset.source === 'custom';
+
+    // Save provider config
+    fetch('/api/set-provider', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({provider, model, backupModel, systemFallback, topupAmount, useCustomApi})
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // If using custom API, save the keys
+            if (useCustomApi) {
+                const promises = [];
+
+                const anthropicKey = document.getElementById('anthropic-key-input').value;
+                if (anthropicKey) {
+                    promises.push(fetch('/api/set-api-key', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({provider: 'anthropic', api_key: anthropicKey})
+                    }));
+                }
+
+                const openaiKey = document.getElementById('openai-key-input').value;
+                if (openaiKey) {
+                    promises.push(fetch('/api/set-api-key', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({provider: 'openai', api_key: openaiKey})
+                    }));
+                }
+
+                const googleKey = document.getElementById('google-key-input').value;
+                if (googleKey) {
+                    promises.push(fetch('/api/set-api-key', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({provider: 'google', api_key: googleKey})
+                    }));
+                }
+
+                Promise.all(promises).then(() => {
+                    window.location.href = '/setup';
+                });
+            } else {
+                window.location.href = '/setup';
+            }
+        }
+    });
+}
+
+// Initialize
+providerSelect.dispatchEvent(new Event('change'));
+</script>
+{% endblock %}

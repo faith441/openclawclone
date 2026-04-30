@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Sessions{% endblock %}
+
+{% block content %}
+<div class="page-header" style="text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title" style="margin-bottom: 8px;">Sessions</h1>
+            <p class="page-subtitle">View and manage your AI conversation sessions</p>
+        </div>
+        <button class="btn btn-secondary" onclick="exportSessions()">
+            📥 Export All
+        </button>
+    </div>
+</div>
+
+<!-- Session Stats -->
+<div class="stats-grid" style="margin-bottom: 32px;">
+    <div class="stat-card">
+        <div class="stat-value">342</div>
+        <div class="stat-label">Total Sessions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">28</div>
+        <div class="stat-label">Active Today</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">1,247</div>
+        <div class="stat-label">Total Messages</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">4.2h</div>
+        <div class="stat-label">Avg Duration</div>
+    </div>
+</div>
+
+<!-- Filter Bar -->
+<div class="filter-bar">
+    <div class="filter-group">
+        <label class="filter-label">Branch</label>
+        <select class="form-select" style="width: 150px;">
+            <option value="all">All Branches</option>
+            <option value="main" selected>main</option>
+            <option value="dev">dev</option>
+            <option value="staging">staging</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label class="filter-label">Date Range</label>
+        <select class="form-select" style="width: 150px;">
+            <option value="today" selected>Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+        </select>
+    </div>
+    <div class="filter-group">
+        <label class="filter-label">Model</label>
+        <select class="form-select" style="width: 180px;">
+            <option value="all" selected>All Models</option>
+            <option value="claude">Claude</option>
+            <option value="gpt">GPT</option>
+        </select>
+    </div>
+    <input type="text" class="form-input" placeholder="🔍 Search sessions..." style="flex: 1; max-width: 300px;">
+</div>
+
+<!-- Sessions List -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-icon">📊</span>
+        <h3 class="card-title">Recent Sessions</h3>
+    </div>
+
+    <div class="sessions-table">
+        <div class="table-header">
+            <div class="table-cell">Session ID</div>
+            <div class="table-cell">Branch</div>
+            <div class="table-cell">Model</div>
+            <div class="table-cell">Messages</div>
+            <div class="table-cell">Tokens</div>
+            <div class="table-cell">Cost</div>
+            <div class="table-cell">Duration</div>
+            <div class="table-cell">Started</div>
+            <div class="table-cell">Actions</div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell">
+                <span class="session-id-text">agent:main:main</span>
+            </div>
+            <div class="table-cell">
+                <span class="badge badge-new">main</span>
+            </div>
+            <div class="table-cell">Claude Sonnet 4</div>
+            <div class="table-cell">47</div>
+            <div class="table-cell">24,892</div>
+            <div class="table-cell">$0.87</div>
+            <div class="table-cell">2h 14m</div>
+            <div class="table-cell">2 hours ago</div>
+            <div class="table-cell">
+                <button class="btn-icon" title="View">👁️</button>
+                <button class="btn-icon" title="Export">📥</button>
+                <button class="btn-icon" title="Delete">🗑️</button>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell">
+                <span class="session-id-text">web:main:dashboard</span>
+            </div>
+            <div class="table-cell">
+                <span class="badge badge-new">main</span>
+            </div>
+            <div class="table-cell">Claude Sonnet 4</div>
+            <div class="table-cell">23</div>
+            <div class="table-cell">12,445</div>
+            <div class="table-cell">$0.42</div>
+            <div class="table-cell">1h 32m</div>
+            <div class="table-cell">5 hours ago</div>
+            <div class="table-cell">
+                <button class="btn-icon" title="View">👁️</button>
+                <button class="btn-icon" title="Export">📥</button>
+                <button class="btn-icon" title="Delete">🗑️</button>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell">
+                <span class="session-id-text">cli:dev:testing</span>
+            </div>
+            <div class="table-cell">
+                <span class="badge" style="background-color: #f59e0b; color: white;">dev</span>
+            </div>
+            <div class="table-cell">GPT-4o</div>
+            <div class="table-cell">15</div>
+            <div class="table-cell">8,234</div>
+            <div class="table-cell">$0.28</div>
+            <div class="table-cell">45m</div>
+            <div class="table-cell">1 day ago</div>
+            <div class="table-cell">
+                <button class="btn-icon" title="View">👁️</button>
+                <button class="btn-icon" title="Export">📥</button>
+                <button class="btn-icon" title="Delete">🗑️</button>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <div class="table-cell">
+                <span class="session-id-text">agent:staging:test</span>
+            </div>
+            <div class="table-cell">
+                <span class="badge" style="background-color: #8b5cf6; color: white;">staging</span>
+            </div>
+            <div class="table-cell">Claude 3 Haiku</div>
+            <div class="table-cell">89</div>
+            <div class="table-cell">45,123</div>
+            <div class="table-cell">$0.52</div>
+            <div class="table-cell">3h 45m</div>
+            <div class="table-cell">2 days ago</div>
+            <div class="table-cell">
+                <button class="btn-icon" title="View">👁️</button>
+                <button class="btn-icon" title="Export">📥</button>
+                <button class="btn-icon" title="Delete">🗑️</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.filter-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.sessions-table {
+    display: flex;
+    flex-direction: column;
+}
+
+.table-header {
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 1.2fr 0.8fr 0.8fr 0.6fr 0.8fr 1fr 1fr;
+    gap: 12px;
+    padding: 12px 20px;
+    background-color: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-row {
+    display: grid;
+    grid-template-columns: 1.5fr 0.8fr 1.2fr 0.8fr 0.8fr 0.6fr 0.8fr 1fr 1fr;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+.table-row:hover {
+    background-color: var(--bg-tertiary);
+}
+
+.table-row:last-child {
+    border-bottom: none;
+}
+
+.table-cell {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.session-id-text {
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+    opacity: 1;
+}
+</style>
+
+<script>
+function exportSessions() {
+    showNotification('Export feature coming soon!', 'success');
+}
+</script>
+{% endblock %}

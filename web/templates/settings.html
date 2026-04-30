@@ -1,0 +1,507 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Zenthral{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-header">
+        <h1>Settings</h1>
+        <p class="text-muted">Manage your AI providers and preferences</p>
+    </div>
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#api-keys-tab">API Keys</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#preferences-tab">Preferences</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#account-tab">Account</a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- API Keys Tab -->
+        <div id="api-keys-tab" class="tab-pane fade show active">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Your API Keys</h5>
+                            <button class="btn btn-primary btn-sm" onclick="showAddKeyModal()">
+                                <i class="bi bi-plus-lg"></i> Add API Key
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="api-keys-list">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title">Why API Keys?</h6>
+                            <p class="small">Zenthral uses a Bring-Your-Own-Key (BYOK) model. This means:</p>
+                            <ul class="small">
+                                <li>You pay providers directly at their rates</li>
+                                <li>No markup or hidden fees</li>
+                                <li>Full control over your usage</li>
+                                <li>Your keys are encrypted and secure</li>
+                            </ul>
+                            <hr>
+                            <h6 class="card-title">Supported Providers</h6>
+                            <div id="providers-list" class="small">
+                                <div class="spinner-border spinner-border-sm" role="status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences Tab -->
+        <div id="preferences-tab" class="tab-pane fade">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">AI Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <form id="preferences-form">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Default Provider</label>
+                                <select class="form-select" id="default-provider" name="default_provider">
+                                    <option value="">Auto-select best provider</option>
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                    <option value="google">Google AI</option>
+                                    <option value="groq">Groq</option>
+                                    <option value="ollama">Ollama (Local)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Default Model</label>
+                                <input type="text" class="form-control" id="default-model" name="default_model" placeholder="e.g., gpt-4">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Temperature</label>
+                                <input type="range" class="form-range" id="temperature" name="temperature" min="0" max="2" step="0.1" value="0.7">
+                                <small class="text-muted">Current: <span id="temperature-value">0.7</span></small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Max Tokens</label>
+                                <input type="number" class="form-control" id="max-tokens" name="max_tokens" value="4000" min="100" max="32000">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Monthly Budget Limit ($)</label>
+                                <input type="number" class="form-control" id="budget-limit" name="budget_limit" placeholder="Optional" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Budget Period</label>
+                                <select class="form-select" id="budget-period" name="budget_period">
+                                    <option value="monthly">Monthly</option>
+                                    <option value="weekly">Weekly</option>
+                                    <option value="daily">Daily</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="auto-select-model" name="auto_select_model" checked>
+                                <label class="form-check-label" for="auto-select-model">
+                                    Auto-select best model for each task
+                                </label>
+                                <small class="d-block text-muted">Automatically choose the most cost-effective model based on task complexity</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Tab -->
+        <div id="account-tab" class="tab-pane fade">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Account Settings</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Account settings coming soon...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add API Key Modal -->
+<div class="modal fade" id="addKeyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add API Key</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-key-form">
+                    <div class="mb-3">
+                        <label class="form-label">Provider</label>
+                        <select class="form-select" id="provider-select" name="provider" required>
+                            <option value="">Select a provider...</option>
+                            <option value="openai">OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                            <option value="google">Google AI</option>
+                            <option value="groq">Groq</option>
+                            <option value="ollama">Ollama (Local)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">API Key</label>
+                        <input type="password" class="form-control" id="api-key-input" name="api_key" required>
+                        <small class="text-muted">Your API key is encrypted and stored securely</small>
+                    </div>
+                    <div id="provider-info" class="alert alert-info" style="display: none;">
+                        <small id="provider-info-text"></small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addApiKey()">Add Key</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.settings-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.settings-header {
+    margin-bottom: 2rem;
+}
+
+.api-key-item {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.api-key-item.inactive {
+    opacity: 0.6;
+    background-color: #f8f9fa;
+}
+
+.provider-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.provider-badge.openai { background-color: #10a37f; color: white; }
+.provider-badge.anthropic { background-color: #d97706; color: white; }
+.provider-badge.google { background-color: #4285f4; color: white; }
+.provider-badge.groq { background-color: #f97316; color: white; }
+.provider-badge.ollama { background-color: #6366f1; color: white; }
+</style>
+
+<script>
+let apiKeys = [];
+let providers = [];
+let addKeyModal;
+
+document.addEventListener('DOMContentLoaded', function() {
+    addKeyModal = new bootstrap.Modal(document.getElementById('addKeyModal'));
+    loadApiKeys();
+    loadProviders();
+    loadPreferences();
+
+    // Temperature slider
+    document.getElementById('temperature').addEventListener('input', function() {
+        document.getElementById('temperature-value').textContent = this.value;
+    });
+
+    // Provider select handler
+    document.getElementById('provider-select').addEventListener('change', function() {
+        const provider = providers.find(p => p.id === this.value);
+        const infoDiv = document.getElementById('provider-info');
+        const infoText = document.getElementById('provider-info-text');
+
+        if (provider) {
+            infoText.innerHTML = `
+                <strong>${provider.name}</strong><br>
+                ${provider.description}<br>
+                <a href="${provider.signup_url}" target="_blank">Get API Key →</a>
+            `;
+            infoDiv.style.display = 'block';
+        } else {
+            infoDiv.style.display = 'none';
+        }
+    });
+
+    // Preferences form submit
+    document.getElementById('preferences-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        await savePreferences();
+    });
+});
+
+async function loadApiKeys() {
+    try {
+        const response = await fetch('/api/v1/api-keys/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            apiKeys = data.api_keys;
+            renderApiKeys();
+        }
+    } catch (error) {
+        console.error('Failed to load API keys:', error);
+    }
+}
+
+async function loadProviders() {
+    try {
+        const response = await fetch('/api/v1/api-keys/providers', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            providers = data.providers;
+            renderProviders();
+        }
+    } catch (error) {
+        console.error('Failed to load providers:', error);
+    }
+}
+
+async function loadPreferences() {
+    try {
+        const response = await fetch('/api/v1/api-keys/preferences', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            const prefs = data.preferences;
+
+            document.getElementById('default-provider').value = prefs.default_provider || '';
+            document.getElementById('default-model').value = prefs.default_model || '';
+            document.getElementById('temperature').value = prefs.temperature || 0.7;
+            document.getElementById('temperature-value').textContent = prefs.temperature || 0.7;
+            document.getElementById('max-tokens').value = prefs.max_tokens || 4000;
+            document.getElementById('budget-limit').value = prefs.budget_limit || '';
+            document.getElementById('budget-period').value = prefs.budget_period || 'monthly';
+            document.getElementById('auto-select-model').checked = prefs.auto_select_model !== false;
+        }
+    } catch (error) {
+        console.error('Failed to load preferences:', error);
+    }
+}
+
+function renderApiKeys() {
+    const container = document.getElementById('api-keys-list');
+
+    if (apiKeys.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <i class="bi bi-key" style="font-size: 3rem; color: #ccc;"></i>
+                <p class="text-muted mt-2">No API keys configured yet</p>
+                <button class="btn btn-primary" onclick="showAddKeyModal()">Add Your First API Key</button>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = apiKeys.map(key => `
+        <div class="api-key-item ${key.is_active ? '' : 'inactive'}">
+            <div>
+                <span class="provider-badge ${key.provider}">${key.provider.toUpperCase()}</span>
+                <div class="mt-2">
+                    <code class="small">${key.masked_key}</code>
+                </div>
+                <small class="text-muted">
+                    Added ${new Date(key.created_at).toLocaleDateString()}
+                    ${key.last_used ? `• Last used ${new Date(key.last_used).toLocaleDateString()}` : ''}
+                </small>
+            </div>
+            <div>
+                <button class="btn btn-sm btn-outline-${key.is_active ? 'warning' : 'success'}"
+                        onclick="toggleApiKey('${key.id}')">
+                    ${key.is_active ? 'Disable' : 'Enable'}
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteApiKey('${key.id}')">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderProviders() {
+    const container = document.getElementById('providers-list');
+    container.innerHTML = providers.map(p => `
+        <div class="mb-2">
+            <strong>${p.name}</strong>
+            ${p.local ? '<span class="badge bg-secondary">Local</span>' : ''}
+            <br>
+            <small class="text-muted">${p.models.slice(0, 2).join(', ')}</small>
+        </div>
+    `).join('');
+}
+
+function showAddKeyModal() {
+    document.getElementById('add-key-form').reset();
+    document.getElementById('provider-info').style.display = 'none';
+    addKeyModal.show();
+}
+
+async function addApiKey() {
+    const provider = document.getElementById('provider-select').value;
+    const apiKey = document.getElementById('api-key-input').value;
+
+    if (!provider || !apiKey) {
+        alert('Please select a provider and enter an API key');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/v1/api-keys/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify({ provider, api_key: apiKey })
+        });
+
+        if (response.ok) {
+            addKeyModal.hide();
+            await loadApiKeys();
+            showToast('API key added successfully', 'success');
+        } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to add API key');
+        }
+    } catch (error) {
+        console.error('Failed to add API key:', error);
+        alert('Failed to add API key');
+    }
+}
+
+async function toggleApiKey(keyId) {
+    try {
+        const response = await fetch(`/api/v1/api-keys/${keyId}/toggle`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            await loadApiKeys();
+            showToast('API key updated', 'success');
+        }
+    } catch (error) {
+        console.error('Failed to toggle API key:', error);
+    }
+}
+
+async function deleteApiKey(keyId) {
+    if (!confirm('Are you sure you want to delete this API key?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/v1/api-keys/${keyId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (response.ok) {
+            await loadApiKeys();
+            showToast('API key deleted', 'success');
+        }
+    } catch (error) {
+        console.error('Failed to delete API key:', error);
+    }
+}
+
+async function savePreferences() {
+    const formData = new FormData(document.getElementById('preferences-form'));
+    const preferences = {
+        default_provider: formData.get('default_provider'),
+        default_model: formData.get('default_model'),
+        temperature: parseFloat(formData.get('temperature')),
+        max_tokens: parseInt(formData.get('max_tokens')),
+        budget_limit: formData.get('budget_limit') ? parseFloat(formData.get('budget_limit')) : null,
+        budget_period: formData.get('budget_period'),
+        auto_select_model: formData.get('auto_select_model') === 'on'
+    };
+
+    try {
+        const response = await fetch('/api/v1/api-keys/preferences', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            },
+            body: JSON.stringify(preferences)
+        });
+
+        if (response.ok) {
+            showToast('Preferences saved', 'success');
+        }
+    } catch (error) {
+        console.error('Failed to save preferences:', error);
+        alert('Failed to save preferences');
+    }
+}
+
+function showToast(message, type = 'info') {
+    // Simple toast notification
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+    toast.style.zIndex = '9999';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+{% endblock %}

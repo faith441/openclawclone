@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Setting Up Your AI{% endblock %}
+
+{% block content %}
+<div class="setup-container">
+    <div class="congrats-header">
+        <span class="party-emoji">&#x1F389;</span>
+        <h1 class="congrats-title">Congrats!</h1>
+    </div>
+
+    <p class="setup-subtitle">Your personal AI assistant is being created</p>
+
+    <div class="mascot-container">
+        <div class="mascot-glow"></div>
+        <div class="mascot">&#x26A1;</div>
+    </div>
+
+    <div class="progress-section">
+        <div class="progress-status">
+            <span class="spinner"></span>
+            <span id="status-text">Almost there, preparing to launch!</span>
+        </div>
+
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="progress-info">
+            <span id="progress-percent">0% complete</span>
+            <span id="time-remaining">~2 min remaining</span>
+        </div>
+    </div>
+
+    <div class="instance-card">
+        <div class="instance-label">YOUR ZENTHRAL INSTANCE</div>
+        <div class="instance-specs">
+            <div class="spec-item">
+                <div class="spec-value" style="color: var(--accent-primary);">&#x221E;</div>
+                <div class="spec-label">API Calls</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-value" style="color: var(--accent-green);">17</div>
+                <div class="spec-label">AI Agents</div>
+            </div>
+            <div class="spec-item">
+                <div class="spec-value" style="color: #60a5fa);">$20</div>
+                <div class="spec-label">Credits</div>
+            </div>
+        </div>
+    </div>
+
+    <p class="setup-footer">Your AI assistant will be ready to help you automate, create, and scale.</p>
+
+    <div class="brand-logo">
+        <span class="logo-icon">&#x26A1;</span>
+        <span class="logo-text">Zenthral</span>
+    </div>
+</div>
+
+<style>
+.setup-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    text-align: center;
+    padding: 40px;
+}
+
+.congrats-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.party-emoji {
+    font-size: 48px;
+}
+
+.congrats-title {
+    font-size: 56px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #ccc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.setup-subtitle {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+}
+
+.mascot-container {
+    position: relative;
+    margin-bottom: 48px;
+}
+
+.mascot-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(255, 68, 68, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.mascot {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--accent-primary) 0%, #ff6666 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    box-shadow: 0 20px 40px rgba(255, 68, 68, 0.3);
+}
+
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+}
+
+.progress-section {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 32px;
+}
+
+.progress-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-primary) 0%, #ff6666 100%);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.instance-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px 48px;
+    margin-bottom: 32px;
+}
+
+.instance-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.instance-specs {
+    display: flex;
+    gap: 48px;
+}
+
+.spec-item {
+    text-align: center;
+}
+
+.spec-value {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.spec-label {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.setup-footer {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-logo .logo-icon {
+    font-size: 24px;
+}
+
+.brand-logo .logo-text {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+</style>
+
+<script>
+let progress = 0;
+const progressBar = document.getElementById('progress-bar');
+const progressPercent = document.getElementById('progress-percent');
+const timeRemaining = document.getElementById('time-remaining');
+const statusText = document.getElementById('status-text');
+
+const statuses = [
+    { at: 0, text: "Initializing your AI instance..." },
+    { at: 20, text: "Configuring AI models..." },
+    { at: 40, text: "Loading your selected agents..." },
+    { at: 60, text: "Setting up integrations..." },
+    { at: 80, text: "Almost there, preparing to launch!" },
+    { at: 95, text: "Finalizing setup..." }
+];
+
+function updateProgress() {
+    if (progress < 100) {
+        progress += Math.random() * 3 + 1;
+        if (progress > 100) progress = 100;
+
+        progressBar.style.width = progress + '%';
+        progressPercent.textContent = Math.floor(progress) + '% complete';
+
+        // Update time remaining
+        const remaining = Math.max(0, Math.ceil((100 - progress) / 10));
+        if (remaining > 0) {
+            timeRemaining.textContent = '~' + remaining + ' min remaining';
+        } else {
+            timeRemaining.textContent = 'Almost done!';
+        }
+
+        // Update status text
+        for (let i = statuses.length - 1; i >= 0; i--) {
+            if (progress >= statuses[i].at) {
+                statusText.textContent = statuses[i].text;
+                break;
+            }
+        }
+
+        setTimeout(updateProgress, 200 + Math.random() * 300);
+    } else {
+        // Setup complete - redirect to chat
+        statusText.textContent = "Setup complete! Redirecting...";
+        timeRemaining.textContent = '';
+        setTimeout(() => {
+            window.location.href = '/chat';
+        }, 1500);
+    }
+}
+
+// Start progress animation
+setTimeout(updateProgress, 500);
+</script>
+{% endblock %}

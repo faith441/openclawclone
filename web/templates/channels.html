@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Channels{% endblock %}
+
+{% block content %}
+<div class="page-header" style="text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title" style="margin-bottom: 8px;">Channels</h1>
+            <p class="page-subtitle">Manage communication channels and integrations</p>
+        </div>
+        <button class="btn btn-primary" onclick="showAddChannelModal()">
+            + Add Channel
+        </button>
+    </div>
+</div>
+
+<!-- Active Channels -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-icon">📡</span>
+        <h3 class="card-title">Active Channels</h3>
+    </div>
+
+    <div class="channels-list">
+        <div class="channel-item">
+            <div class="channel-info">
+                <div class="channel-icon">💬</div>
+                <div class="channel-details">
+                    <div class="channel-name">CLI Interface</div>
+                    <div class="channel-type">Terminal • Local</div>
+                </div>
+            </div>
+            <div class="channel-stats">
+                <div class="channel-stat">
+                    <span class="stat-label">Messages</span>
+                    <span class="stat-value">1,247</span>
+                </div>
+                <div class="channel-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="badge badge-new">Active</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Configure</button>
+        </div>
+
+        <div class="channel-item">
+            <div class="channel-info">
+                <div class="channel-icon">🌐</div>
+                <div class="channel-details">
+                    <div class="channel-name">Web Dashboard</div>
+                    <div class="channel-type">HTTP • 0.0.0.0:5001</div>
+                </div>
+            </div>
+            <div class="channel-stats">
+                <div class="channel-stat">
+                    <span class="stat-label">Requests</span>
+                    <span class="stat-value">342</span>
+                </div>
+                <div class="channel-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="badge badge-new">Active</span>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Configure</button>
+        </div>
+
+        <div class="channel-item disabled">
+            <div class="channel-info">
+                <div class="channel-icon">🔌</div>
+                <div class="channel-details">
+                    <div class="channel-name">WebSocket Gateway</div>
+                    <div class="channel-type">WS • Not configured</div>
+                </div>
+            </div>
+            <div class="channel-stats">
+                <div class="channel-stat">
+                    <span class="stat-label">Connections</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="channel-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="status-badge">Inactive</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm">Enable</button>
+        </div>
+
+        <div class="channel-item disabled">
+            <div class="channel-info">
+                <div class="channel-icon">💌</div>
+                <div class="channel-details">
+                    <div class="channel-name">Email Channel</div>
+                    <div class="channel-type">SMTP • Not configured</div>
+                </div>
+            </div>
+            <div class="channel-stats">
+                <div class="channel-stat">
+                    <span class="stat-label">Messages</span>
+                    <span class="stat-value">0</span>
+                </div>
+                <div class="channel-stat">
+                    <span class="stat-label">Status</span>
+                    <span class="status-badge">Inactive</span>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-sm">Enable</button>
+        </div>
+    </div>
+</div>
+
+<!-- Available Integrations -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-icon">🔗</span>
+        <h3 class="card-title">Available Integrations</h3>
+    </div>
+
+    <div class="integration-grid">
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">💬</div>
+                <div>
+                    <div class="integration-name">Slack</div>
+                    <div class="integration-desc">Team messaging</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">💬</div>
+                <div>
+                    <div class="integration-name">Discord</div>
+                    <div class="integration-desc">Community chat</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">📱</div>
+                <div>
+                    <div class="integration-name">Telegram</div>
+                    <div class="integration-desc">Instant messaging</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">📧</div>
+                <div>
+                    <div class="integration-name">Email</div>
+                    <div class="integration-desc">Email integration</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">🔔</div>
+                <div>
+                    <div class="integration-name">Webhooks</div>
+                    <div class="integration-desc">HTTP callbacks</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+
+        <div class="integration-card">
+            <div class="integration-info">
+                <div class="integration-icon">🌐</div>
+                <div>
+                    <div class="integration-name">REST API</div>
+                    <div class="integration-desc">API endpoints</div>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-sm">Add</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.channels-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.channel-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.channel-item:hover {
+    border-color: var(--accent-primary);
+}
+
+.channel-item.disabled {
+    opacity: 0.6;
+}
+
+.channel-item.disabled:hover {
+    border-color: var(--border-color);
+}
+
+.channel-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.channel-icon {
+    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+}
+
+.channel-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.channel-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.channel-type {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.channel-stats {
+    display: flex;
+    gap: 32px;
+    margin-right: 24px;
+}
+
+.channel-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.channel-stat .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.channel-stat .stat-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+</style>
+
+<script>
+function showAddChannelModal() {
+    showNotification('Add Channel feature coming soon!', 'success');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Cron Jobs{% endblock %}
+
+{% block content %}
+<div class="page-header" style="text-align: left;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title" style="margin-bottom: 8px;">Cron Jobs</h1>
+            <p class="page-subtitle">Schedule automated tasks and recurring AI operations</p>
+        </div>
+        <button class="btn btn-primary" onclick="createCronJob()">
+            + New Cron Job
+        </button>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom: 32px;">
+    <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Active Jobs</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Completed Today</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Failed</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">n/a</div>
+        <div class="stat-label">Next Run</div>
+    </div>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state">
+    <div class="empty-icon">⏰</div>
+    <h3 class="empty-title">No Cron Jobs Configured</h3>
+    <p class="empty-desc">
+        Schedule automated tasks to run at specific times or intervals.<br>
+        Perfect for daily reports, data syncs, or recurring AI operations.
+    </p>
+    <button class="btn btn-primary" onclick="createCronJob()" style="margin-top: 24px;">
+        Create Your First Cron Job
+    </button>
+</div>
+
+<!-- Example Jobs (Hidden by default) -->
+<div class="card" style="display: none;">
+    <div class="card-header">
+        <span class="card-icon">📋</span>
+        <h3 class="card-title">Scheduled Jobs</h3>
+    </div>
+
+    <div class="cron-list">
+        <div class="cron-item">
+            <div class="cron-info">
+                <div class="cron-icon">📊</div>
+                <div class="cron-details">
+                    <div class="cron-name">Daily Report Generation</div>
+                    <div class="cron-schedule">Every day at 9:00 AM</div>
+                    <div class="cron-command">python scripts/generate_report.py</div>
+                </div>
+            </div>
+            <div class="cron-status">
+                <span class="badge badge-new">Active</span>
+            </div>
+            <div class="cron-actions">
+                <button class="btn btn-secondary btn-sm">Edit</button>
+                <button class="btn btn-secondary btn-sm">Pause</button>
+                <button class="btn btn-secondary btn-sm">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Templates -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-icon">⭐</span>
+        <h3 class="card-title">Popular Templates</h3>
+    </div>
+
+    <div class="template-grid">
+        <div class="template-card">
+            <div class="template-icon">📧</div>
+            <h4 class="template-name">Daily Email Digest</h4>
+            <p class="template-desc">Send a summary email every morning with key updates</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+
+        <div class="template-card">
+            <div class="template-icon">📊</div>
+            <h4 class="template-name">Weekly Analytics</h4>
+            <p class="template-desc">Generate weekly performance reports and analytics</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+
+        <div class="template-card">
+            <div class="template-icon">🔄</div>
+            <h4 class="template-name">Data Sync</h4>
+            <p class="template-desc">Synchronize data between systems every hour</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+
+        <div class="template-card">
+            <div class="template-icon">🧹</div>
+            <h4 class="template-name">Cleanup Task</h4>
+            <p class="template-desc">Remove old files and clean up resources daily</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+
+        <div class="template-card">
+            <div class="template-icon">🔔</div>
+            <h4 class="template-name">Status Check</h4>
+            <p class="template-desc">Monitor system health and send alerts</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+
+        <div class="template-card">
+            <div class="template-icon">💾</div>
+            <h4 class="template-name">Backup Task</h4>
+            <p class="template-desc">Automated backups of important data</p>
+            <button class="btn btn-secondary btn-sm">Use Template</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 32px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.empty-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.empty-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.cron-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cron-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+}
+
+.cron-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.cron-icon {
+    font-size: 32px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-card);
+    border-radius: 8px;
+}
+
+.cron-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cron-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cron-schedule {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.cron-command {
+    font-size: 12px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    color: var(--text-muted);
+    background-color: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.cron-status {
+    margin-right: 20px;
+}
+
+.cron-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.template-card {
+    padding: 24px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.template-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+.template-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+}
+
+.template-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.template-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+</style>
+
+<script>
+function createCronJob() {
+    showNotification('Cron Job creation coming soon!', 'success');
+}
+</script>
+{% endblock %}

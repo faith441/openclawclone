@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Marketplace - Zenthral</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #667eea;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-email {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #c7d2fe;
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .category-chip {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .category-chip:hover {
+            background: #e5e7eb;
+        }
+
+        .category-chip.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .agent-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .agent-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+
+        .agent-description {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .agent-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .agent-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .agent-actions .btn {
+            flex: 1;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .badge-featured {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-installed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .empty-state {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 16px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #f3f4f6;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: #6b7280;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #e5e7eb;
+        }
+
+        .config-form {
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            border-left: 4px solid #10b981;
+        }
+
+        .notification.error {
+            border-left: 4px solid #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span>🛍️</span>
+                Agent Marketplace
+            </h1>
+            <div class="user-info">
+                <span class="user-email" id="userEmail">Loading...</span>
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+                <a href="/marketplace/my-agents" class="btn btn-secondary">My Agents</a>
+                <button onclick="logout()" class="btn btn-primary">Logout</button>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search agents..."
+                    onkeyup="filterAgents()"
+                >
+            </div>
+            <div class="category-filter" id="categoryFilter">
+                <div class="category-chip active" data-category="" onclick="selectCategory(this, '')">
+                    All
+                </div>
+            </div>
+        </div>
+
+        <!-- Agents Grid -->
+        <div class="agents-grid" id="agentsGrid">
+            <div class="loading">Loading agents...</div>
+        </div>
+    </div>
+
+    <!-- Installation Modal -->
+    <div class="modal" id="installModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        let allAgents = [];
+        let installedAgentIds = [];
+        let currentAgent = null;
+
+        // Load user info and agents on page load
+        window.onload = async () => {
+            await loadUserInfo();
+            await loadCategories();
+            await loadAgents();
+        };
+
+        async function loadUserInfo() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/auth/login';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Unauthorized');
+
+                const data = await response.json();
+                document.getElementById('userEmail').textContent = data.user.email;
+            } catch (error) {
+                console.error('Error loading user:', error);
+                localStorage.removeItem('access_token');
+                window.location.href = '/auth/login';
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/v1/agents/categories');
+                const data = await response.json();
+
+                if (data.success) {
+                    const filterDiv = document.getElementById('categoryFilter');
+                    data.categories.forEach(cat => {
+                        const chip = document.createElement('div');
+                        chip.className = 'category-chip';
+                        chip.setAttribute('data-category', cat.name);
+                        chip.textContent = `${cat.name} (${cat.count})`;
+                        chip.onclick = () => selectCategory(chip, cat.name);
+                        filterDiv.appendChild(chip);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        async function loadAgents() {
+            const token = localStorage.getItem('access_token');
+            const grid = document.getElementById('agentsGrid');
+
+            try {
+                // Load all agents
+                const agentsResponse = await fetch('/api/v1/agents/browse?limit=100');
+                const agentsData = await agentsResponse.json();
+
+                // Load installed agents
+                const installedResponse = await fetch('/api/v1/agents/installed', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const installedData = await installedResponse.json();
+
+                if (agentsData.success) {
+                    allAgents = agentsData.agents;
+                    installedAgentIds = installedData.success
+                        ? installedData.installed_agents.map(a => a.agent_id)
+                        : [];
+
+                    renderAgents(allAgents);
+                }
+            } catch (error) {
+                console.error('Error loading agents:', error);
+                grid.innerHTML = '<div class="empty-state"><h3>Error loading agents</h3></div>';
+            }
+        }
+
+        function renderAgents(agents) {
+            const grid = document.getElementById('agentsGrid');
+
+            if (agents.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No agents found</h3>
+                        <p>Try adjusting your filters</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = agents.map(agent => {
+                const isInstalled = installedAgentIds.includes(agent.id);
+
+                return `
+                    <div class="agent-card" onclick="showAgentDetail('${agent.id}')">
+                        ${agent.is_featured ? '<div class="badge badge-featured">Featured</div>' : ''}
+                        ${isInstalled ? '<div class="badge badge-installed">Installed</div>' : ''}
+
+                        <div class="agent-icon">${agent.icon || '⚡'}</div>
+                        <div class="agent-name">${agent.name}</div>
+                        <div class="agent-description">${agent.description}</div>
+
+                        <div class="agent-meta">
+                            <span>📦 ${agent.install_count || 0} installs</span>
+                            ${agent.rating_avg ? `<span>⭐ ${agent.rating_avg.toFixed(1)}</span>` : ''}
+                        </div>
+
+                        <div class="agent-actions" onclick="event.stopPropagation()">
+                            ${isInstalled
+                                ? '<button class="btn btn-secondary" disabled>Installed</button>'
+                                : `<button class="btn btn-primary" onclick="openInstallModal('${agent.id}')">Install</button>`
+                            }
+                            <button class="btn btn-secondary" onclick="showAgentDetail('${agent.id}')">Details</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectCategory(element, category) {
+            document.querySelectorAll('.category-chip').forEach(chip => {
+                chip.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            filterAgents(category, searchQuery);
+        }
+
+        function filterAgents(category = null, search = null) {
+            const activeCategory = category || document.querySelector('.category-chip.active')?.dataset.category || '';
+            const searchQuery = search !== null ? search : document.getElementById('searchInput').value.toLowerCase();
+
+            let filtered = allAgents;
+
+            if (activeCategory) {
+                filtered = filtered.filter(a => a.category === activeCategory);
+            }
+
+            if (searchQuery) {
+                filtered = filtered.filter(a =>
+                    a.name.toLowerCase().includes(searchQuery) ||
+                    a.description.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            renderAgents(filtered);
+        }
+
+        function openInstallModal(agentId) {
+            const agent = allAgents.find(a => a.id === agentId);
+            if (!agent) return;
+
+            currentAgent = agent;
+            const modal = document.getElementById('installModal');
+            const content = document.getElementById('modalContent');
+
+            const envVars = agent.env_vars_required || [];
+
+            content.innerHTML = `
+                <div class="agent-icon" style="font-size: 60px;">${agent.icon || '⚡'}</div>
+                <h2>${agent.name}</h2>
+                <p style="color: #6b7280; margin: 12px 0;">${agent.description}</p>
+
+                ${envVars.length > 0 ? `
+                    <form class="config-form" id="installForm" onsubmit="installAgent(event)">
+                        <h3 style="margin-bottom: 16px;">Configuration Required</h3>
+                        ${envVars.map(varName => `
+                            <div class="form-group">
+                                <label>${varName}</label>
+                                <input
+                                    type="${varName.includes('KEY') || varName.includes('SECRET') || varName.includes('PASSWORD') ? 'password' : 'text'}"
+                                    name="${varName}"
+                                    required
+                                    placeholder="Enter ${varName}"
+                                >
+                            </div>
+                        `).join('')}
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Install Agent</button>
+                        </div>
+                    </form>
+                ` : `
+                    <div class="form-actions" style="margin-top: 24px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="installAgent()">Install Agent</button>
+                    </div>
+                `}
+            `;
+
+            modal.classList.add('active');
+        }
+
+        async function installAgent(event) {
+            if (event) event.preventDefault();
+
+            const token = localStorage.getItem('access_token');
+            const form = document.getElementById('installForm');
+
+            let config = null;
+            if (form) {
+                const formData = new FormData(form);
+                config = {};
+                formData.forEach((value, key) => {
+                    config[key] = value;
+                });
+            }
+
+            try {
+                const response = await fetch('/api/v1/agents/install', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        agent_id: currentAgent.id,
+                        config: config
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('Agent installed successfully!', 'success');
+                    closeModal();
+                    await loadAgents(); // Reload to update installed status
+                } else {
+                    showNotification(data.error || 'Installation failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error installing agent:', error);
+                showNotification('Installation failed', 'error');
+            }
+        }
+
+        function showAgentDetail(agentId) {
+            window.location.href = `/marketplace/agent/${agentId}`;
+        }
+
+        function closeModal() {
+            document.getElementById('installModal').classList.remove('active');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'flex';
+
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+            window.location.href = '/auth/login';
+        }
+    </script>
+</body>
+</html>

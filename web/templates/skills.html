@@ -1,0 +1,675 @@
+{% extends "base.html" %}
+
+{% block title %}Skills{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Skills & Agents</h1>
+    <p class="page-subtitle"><span id="totalAgents">...</span> AI-powered automation agents</p>
+</div>
+
+<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+    <button class="btn btn-primary filter-btn active" data-filter="all">All Skills</button>
+    <button class="btn btn-secondary filter-btn" data-filter="installed">Installed</button>
+    <button class="btn btn-secondary filter-btn" data-filter="available">Available</button>
+    <button class="btn btn-secondary filter-btn" data-filter="industry">Industry</button>
+    <button class="btn btn-secondary filter-btn" data-filter="automation">Automation</button>
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search agents..."
+        style="margin-left: auto; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; min-width: 200px;"
+        onkeyup="filterAgents()"
+    >
+</div>
+
+<div class="skills-grid" id="skillsGrid">
+    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+        Loading agents...
+    </div>
+</div>
+
+<!-- Agent Modal -->
+<div id="skill-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="card" style="width: 600px; max-width: 90%; max-height: 80vh; overflow-y: auto;">
+        <div class="card-header">
+            <span class="card-icon" id="modal-icon">💰</span>
+            <span class="card-title" id="modal-title">Agent Name</span>
+            <button onclick="closeModal()" style="margin-left: auto; background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; padding: 0 8px;">×</button>
+        </div>
+
+        <div id="modal-status" style="margin-bottom: 16px;"></div>
+        <p id="modal-description" style="color: var(--text-secondary); margin-bottom: 20px;">Agent description</p>
+
+        <div id="modal-form">
+            <!-- Dynamic form fields will be inserted here -->
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;" id="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" id="modal-primary-btn">Action</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.skill-card {
+    position: relative;
+    cursor: pointer;
+}
+
+.skill-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.badge-installed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-available {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-disabled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.agent-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.agent-actions button {
+    flex: 1;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    z-index: 2000;
+    display: none;
+}
+
+.notification.success {
+    border-left: 4px solid #10b981;
+}
+
+.notification.error {
+    border-left: 4px solid #ef4444;
+}
+</style>
+
+<div class="notification" id="notification"></div>
+
+<script>
+let allAgents = [];
+let installedAgents = [];
+let currentAgent = null;
+
+// Load agents on page load
+window.onload = async () => {
+    await loadAgents();
+};
+
+async function loadAgents() {
+    try {
+        // Check if user is logged in
+        const token = localStorage.getItem('access_token');
+
+        // Load all agents from catalog
+        const catalogResponse = await fetch('/api/v1/agents/browse?limit=100');
+        const catalogData = await catalogResponse.json();
+
+        if (!catalogData.success) {
+            throw new Error('Failed to load agents');
+        }
+
+        allAgents = catalogData.agents;
+
+        // Load installed agents if logged in
+        if (token) {
+            try {
+                const installedResponse = await fetch('/api/v1/agents/installed', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const installedData = await installedResponse.json();
+
+                if (installedData.success) {
+                    installedAgents = installedData.installed_agents;
+                }
+            } catch (err) {
+                console.log('Not logged in or error loading installed agents');
+            }
+        }
+
+        renderAgents(allAgents);
+        updateStats();
+
+    } catch (error) {
+        console.error('Error loading agents:', error);
+        document.getElementById('skillsGrid').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                <p>Error loading agents. Please refresh the page.</p>
+            </div>
+        `;
+    }
+}
+
+function updateStats() {
+    const installed = installedAgents.length;
+    const total = allAgents.length;
+    document.getElementById('totalAgents').textContent =
+        `${total} total (${installed} installed)`;
+}
+
+function renderAgents(agents) {
+    const grid = document.getElementById('skillsGrid');
+
+    if (agents.length === 0) {
+        grid.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                <p>No agents found</p>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = agents.map(agent => {
+        const installedAgent = installedAgents.find(ia => ia.agent_id === agent.id);
+        const isInstalled = !!installedAgent;
+        const isEnabled = installedAgent?.is_enabled;
+
+        let badgeHtml = '';
+        if (isInstalled) {
+            badgeHtml = isEnabled
+                ? '<div class="skill-badge badge-installed">✓ Installed</div>'
+                : '<div class="skill-badge badge-disabled">Disabled</div>';
+        } else {
+            badgeHtml = '<div class="skill-badge badge-available">Available</div>';
+        }
+
+        return `
+            <div class="skill-card"
+                 data-category="${agent.category}"
+                 data-installed="${isInstalled}"
+                 data-agent-id="${agent.id}"
+                 onclick="openAgentModal('${agent.id}')">
+                ${badgeHtml}
+                <div class="skill-icon">${agent.icon || '⚡'}</div>
+                <div class="skill-name">${agent.name}</div>
+                <div class="skill-description">${agent.description}</div>
+                <span class="skill-category">${agent.category.toUpperCase()}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function filterAgents() {
+    const activeFilter = document.querySelector('.filter-btn.btn-primary')?.dataset.filter || 'all';
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+
+    let filtered = allAgents;
+
+    // Apply category filter
+    if (activeFilter === 'installed') {
+        const installedIds = installedAgents.map(ia => ia.agent_id);
+        filtered = filtered.filter(a => installedIds.includes(a.id));
+    } else if (activeFilter === 'available') {
+        const installedIds = installedAgents.map(ia => ia.agent_id);
+        filtered = filtered.filter(a => !installedIds.includes(a.id));
+    } else if (activeFilter !== 'all') {
+        filtered = filtered.filter(a => a.category === activeFilter);
+    }
+
+    // Apply search filter
+    if (searchQuery) {
+        filtered = filtered.filter(a =>
+            a.name.toLowerCase().includes(searchQuery) ||
+            a.description.toLowerCase().includes(searchQuery)
+        );
+    }
+
+    renderAgents(filtered);
+}
+
+// Filter button handlers
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('btn-primary');
+            b.classList.add('btn-secondary');
+        });
+        this.classList.remove('btn-secondary');
+        this.classList.add('btn-primary');
+
+        filterAgents();
+    });
+});
+
+async function openAgentModal(agentId) {
+    const agent = allAgents.find(a => a.id === agentId);
+    if (!agent) return;
+
+    currentAgent = agent;
+    const installedAgent = installedAgents.find(ia => ia.agent_id === agentId);
+    const isInstalled = !!installedAgent;
+
+    // Update modal header
+    document.getElementById('modal-icon').textContent = agent.icon || '⚡';
+    document.getElementById('modal-title').textContent = agent.name;
+    document.getElementById('modal-description').textContent = agent.description;
+
+    // Update status badge
+    const statusDiv = document.getElementById('modal-status');
+    if (isInstalled) {
+        statusDiv.innerHTML = installedAgent.is_enabled
+            ? '<span class="skill-badge badge-installed">✓ Installed & Enabled</span>'
+            : '<span class="skill-badge badge-disabled">Installed but Disabled</span>';
+    } else {
+        statusDiv.innerHTML = '<span class="skill-badge badge-available">Available to Install</span>';
+    }
+
+    // Build form
+    const formContainer = document.getElementById('modal-form');
+    const envVars = agent.env_vars_required || [];
+
+    if (!isInstalled && envVars.length > 0) {
+        // Show installation form
+        formContainer.innerHTML = `
+            <h4 style="margin-bottom: 12px;">Configuration Required</h4>
+            ${envVars.map(varName => `
+                <div class="form-group">
+                    <label class="form-label">${varName}</label>
+                    <input
+                        type="${varName.includes('KEY') || varName.includes('SECRET') || varName.includes('PASSWORD') ? 'password' : 'text'}"
+                        class="form-input"
+                        name="${varName}"
+                        placeholder="Enter ${varName}"
+                        required
+                    >
+                </div>
+            `).join('')}
+        `;
+    } else if (isInstalled && installedAgent.config) {
+        // Show current configuration (masked)
+        const config = installedAgent.config;
+        formContainer.innerHTML = `
+            <h4 style="margin-bottom: 12px;">Current Configuration</h4>
+            ${Object.entries(config).map(([key, value]) => `
+                <div class="form-group">
+                    <label class="form-label">${key}</label>
+                    <input
+                        type="text"
+                        class="form-input"
+                        value="${value}"
+                        disabled
+                        style="background: var(--bg-secondary);"
+                    >
+                </div>
+            `).join('')}
+        `;
+    } else {
+        formContainer.innerHTML = '<p style="color: var(--text-secondary);">No configuration required</p>';
+    }
+
+    // Update action buttons
+    const actionsDiv = document.getElementById('modal-actions');
+    const primaryBtn = document.getElementById('modal-primary-btn');
+
+    if (!isInstalled) {
+        primaryBtn.textContent = 'Install Agent';
+        primaryBtn.onclick = installAgent;
+        primaryBtn.className = 'btn btn-primary';
+    } else {
+        actionsDiv.innerHTML = `
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            ${installedAgent.is_enabled
+                ? `<button class="btn btn-primary" onclick="openRunModal('${installedAgent.id}')">▶ Run Agent</button>
+                   <button class="btn btn-secondary" onclick="disableAgent()">Disable</button>`
+                : '<button class="btn btn-primary" onclick="enableAgent()">Enable</button>'
+            }
+            <button class="btn" style="background: #fee2e2; color: #dc2626;" onclick="uninstallAgent()">Uninstall</button>
+        `;
+    }
+
+    document.getElementById('skill-modal').style.display = 'flex';
+}
+
+async function installAgent() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        showNotification('Please login to install agents', 'error');
+        window.location.href = '/auth/login';
+        return;
+    }
+
+    const form = document.getElementById('modal-form');
+    const inputs = form.querySelectorAll('input[required]');
+    const config = {};
+
+    inputs.forEach(input => {
+        config[input.name] = input.value;
+    });
+
+    try {
+        const response = await fetch('/api/v1/agents/install', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                agent_id: currentAgent.id,
+                config: Object.keys(config).length > 0 ? config : null
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Agent installed successfully!', 'success');
+            closeModal();
+            await loadAgents(); // Reload to update installed status
+        } else {
+            showNotification(data.error || 'Installation failed', 'error');
+        }
+    } catch (error) {
+        console.error('Error installing agent:', error);
+        showNotification('Installation failed', 'error');
+    }
+}
+
+async function enableAgent() {
+    await toggleAgent(true);
+}
+
+async function disableAgent() {
+    await toggleAgent(false);
+}
+
+async function toggleAgent(enabled) {
+    const token = localStorage.getItem('access_token');
+    const installedAgent = installedAgents.find(ia => ia.agent_id === currentAgent.id);
+
+    try {
+        const response = await fetch(`/api/v1/agents/installed/${installedAgent.id}/toggle`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ enabled })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification(data.message, 'success');
+            closeModal();
+            await loadAgents();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        console.error('Error toggling agent:', error);
+        showNotification('Operation failed', 'error');
+    }
+}
+
+async function uninstallAgent() {
+    if (!confirm(`Are you sure you want to uninstall "${currentAgent.name}"?`)) {
+        return;
+    }
+
+    const token = localStorage.getItem('access_token');
+    const installedAgent = installedAgents.find(ia => ia.agent_id === currentAgent.id);
+
+    try {
+        const response = await fetch(`/api/v1/agents/installed/${installedAgent.id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('Agent uninstalled successfully!', 'success');
+            closeModal();
+            await loadAgents();
+        } else {
+            showNotification(data.error, 'error');
+        }
+    } catch (error) {
+        console.error('Error uninstalling agent:', error);
+        showNotification('Uninstall failed', 'error');
+    }
+}
+
+function closeModal() {
+    document.getElementById('skill-modal').style.display = 'none';
+}
+
+function showNotification(message, type) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.className = `notification ${type}`;
+    notification.style.display = 'block';
+
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// Close modal on outside click
+document.getElementById('skill-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// =====================
+// Run Agent Functions
+// =====================
+
+let currentInstalledAgentId = null;
+let currentExecutionId = null;
+
+function openRunModal(installedAgentId) {
+    currentInstalledAgentId = installedAgentId;
+    closeModal(); // Close the detail modal
+
+    const installedAgent = installedAgents.find(ia => ia.id === installedAgentId);
+    const agent = allAgents.find(a => a.id === installedAgent?.agent_id);
+
+    if (!agent) return;
+
+    // Create run modal HTML
+    const runModal = document.createElement('div');
+    runModal.id = 'run-modal';
+    runModal.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1001; align-items: center; justify-content: center;';
+
+    runModal.innerHTML = `
+        <div class="card" style="width: 700px; max-width: 90%; max-height: 80vh; overflow-y: auto;">
+            <div class="card-header">
+                <span class="card-icon">${agent.icon || '⚡'}</span>
+                <span class="card-title">Run: ${agent.name}</span>
+                <button onclick="closeRunModal()" style="margin-left: auto; background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; padding: 0 8px;">×</button>
+            </div>
+
+            <div id="run-form-container" style="padding: 20px;">
+                <h4 style="margin-bottom: 16px;">Input Parameters</h4>
+                <div class="form-group">
+                    <label class="form-label">Input Data (JSON)</label>
+                    <textarea
+                        id="run-input"
+                        class="form-input"
+                        rows="6"
+                        placeholder='{"key": "value"}'
+                        style="font-family: monospace;"
+                    >{}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="btn btn-secondary" onclick="closeRunModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="executeAgent()">▶ Execute Agent</button>
+                </div>
+            </div>
+
+            <div id="run-result-container" style="display: none; padding: 20px;">
+                <div id="run-status" style="margin-bottom: 16px;"></div>
+                <h4 style="margin-bottom: 12px;">Output</h4>
+                <pre id="run-output" style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; overflow-x: auto; max-height: 300px;"></pre>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button class="btn btn-secondary" onclick="closeRunModal()">Close</button>
+                    <button class="btn btn-primary" onclick="runAgain()">Run Again</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(runModal);
+
+    // Close on outside click
+    runModal.addEventListener('click', function(e) {
+        if (e.target === runModal) closeRunModal();
+    });
+}
+
+function closeRunModal() {
+    const runModal = document.getElementById('run-modal');
+    if (runModal) {
+        runModal.remove();
+    }
+    currentInstalledAgentId = null;
+    currentExecutionId = null;
+}
+
+async function executeAgent() {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        showNotification('Please login to run agents', 'error');
+        return;
+    }
+
+    const inputText = document.getElementById('run-input').value;
+    let inputData = {};
+
+    try {
+        inputData = JSON.parse(inputText);
+    } catch (e) {
+        showNotification('Invalid JSON input', 'error');
+        return;
+    }
+
+    // Show loading state
+    document.getElementById('run-form-container').style.display = 'none';
+    document.getElementById('run-result-container').style.display = 'block';
+    document.getElementById('run-status').innerHTML = `
+        <span class="skill-badge" style="background: #fef3c7; color: #92400e;">
+            ⏳ Running...
+        </span>
+    `;
+    document.getElementById('run-output').textContent = 'Executing agent...';
+
+    try {
+        const response = await fetch('/api/v1/executions/run', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                installed_agent_id: currentInstalledAgentId,
+                input: inputData
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            currentExecutionId = data.execution.id;
+            // Poll for completion
+            pollExecution();
+        } else {
+            document.getElementById('run-status').innerHTML = `
+                <span class="skill-badge badge-disabled">❌ Failed</span>
+            `;
+            document.getElementById('run-output').textContent = data.error || 'Execution failed';
+        }
+    } catch (error) {
+        console.error('Error executing agent:', error);
+        document.getElementById('run-status').innerHTML = `
+            <span class="skill-badge badge-disabled">❌ Error</span>
+        `;
+        document.getElementById('run-output').textContent = 'Failed to start execution';
+    }
+}
+
+async function pollExecution() {
+    const token = localStorage.getItem('access_token');
+
+    try {
+        const response = await fetch(`/api/v1/executions/${currentExecutionId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const execution = data.execution;
+
+            if (execution.status === 'running' || execution.status === 'pending') {
+                // Still running, poll again
+                setTimeout(pollExecution, 1000);
+            } else if (execution.status === 'completed') {
+                document.getElementById('run-status').innerHTML = `
+                    <span class="skill-badge badge-installed">✓ Completed</span>
+                    <span style="margin-left: 12px; color: var(--text-secondary); font-size: 13px;">
+                        ${execution.duration_seconds?.toFixed(2)}s | ${execution.total_tokens} tokens | $${execution.cost_usd?.toFixed(4)}
+                    </span>
+                `;
+                document.getElementById('run-output').textContent = JSON.stringify(execution.output_data, null, 2);
+                showNotification('Agent executed successfully!', 'success');
+            } else if (execution.status === 'failed') {
+                document.getElementById('run-status').innerHTML = `
+                    <span class="skill-badge badge-disabled">❌ Failed</span>
+                `;
+                document.getElementById('run-output').textContent = execution.error_message || 'Execution failed';
+                showNotification('Agent execution failed', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Error polling execution:', error);
+    }
+}
+
+function runAgain() {
+    document.getElementById('run-form-container').style.display = 'block';
+    document.getElementById('run-result-container').style.display = 'none';
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Integration{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Integrations</h1>
+    <p class="page-subtitle">Connect your external services and APIs</p>
+</div>
+
+<div class="skills-grid">
+    <div class="skill-card" onclick="setupIntegration('stripe')">
+        <div class="skill-icon">💳</div>
+        <div class="skill-name">Stripe</div>
+        <div class="skill-description">Payment processing for invoices</div>
+        <span class="skill-category" id="stripe-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('shopify')">
+        <div class="skill-icon">🛒</div>
+        <div class="skill-name">Shopify</div>
+        <div class="skill-description">E-commerce order management</div>
+        <span class="skill-category" id="shopify-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('twilio')">
+        <div class="skill-icon">📱</div>
+        <div class="skill-name">Twilio</div>
+        <div class="skill-description">SMS and voice messaging</div>
+        <span class="skill-category" id="twilio-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('slack')">
+        <div class="skill-icon">💬</div>
+        <div class="skill-name">Slack</div>
+        <div class="skill-description">Team notifications</div>
+        <span class="skill-category" id="slack-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('gmail')">
+        <div class="skill-icon">📧</div>
+        <div class="skill-name">Gmail / SMTP</div>
+        <div class="skill-description">Email automation</div>
+        <span class="skill-category" id="gmail-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('openai')">
+        <div class="skill-icon">🤖</div>
+        <div class="skill-name">OpenAI</div>
+        <div class="skill-description">GPT models</div>
+        <span class="skill-category" id="openai-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('anthropic')">
+        <div class="skill-icon">🧠</div>
+        <div class="skill-name">Anthropic</div>
+        <div class="skill-description">Claude models</div>
+        <span class="skill-category" id="anthropic-status">NOT CONNECTED</span>
+    </div>
+
+    <div class="skill-card" onclick="setupIntegration('google')">
+        <div class="skill-icon">🔍</div>
+        <div class="skill-name">Google AI</div>
+        <div class="skill-description">Gemini models</div>
+        <span class="skill-category" id="google-status">NOT CONNECTED</span>
+    </div>
+</div>
+
+<!-- Integration Modal -->
+<div id="integration-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="card" style="width: 500px; max-width: 90%;">
+        <div class="card-header">
+            <span class="card-icon" id="int-modal-icon">🔗</span>
+            <span class="card-title" id="int-modal-title">Connect Service</span>
+            <button onclick="closeIntModal()" style="margin-left: auto; background: none; border: none; color: var(--text-secondary); font-size: 20px; cursor: pointer;">×</button>
+        </div>
+        <div id="int-modal-form"></div>
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeIntModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveIntegration()">Connect</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const integrationForms = {
+    'stripe': {icon: '💳', title: 'Connect Stripe', fields: [
+        {name: 'api_key', label: 'Stripe Secret Key', type: 'password', placeholder: 'sk_test_...'}
+    ]},
+    'shopify': {icon: '🛒', title: 'Connect Shopify', fields: [
+        {name: 'shop_name', label: 'Shop Name', type: 'text', placeholder: 'mystore'},
+        {name: 'access_token', label: 'Access Token', type: 'password', placeholder: 'shpat_...'}
+    ]},
+    'twilio': {icon: '📱', title: 'Connect Twilio', fields: [
+        {name: 'account_sid', label: 'Account SID', type: 'text', placeholder: 'AC...'},
+        {name: 'auth_token', label: 'Auth Token', type: 'password'},
+        {name: 'phone_number', label: 'Phone Number', type: 'tel', placeholder: '+1234567890'}
+    ]},
+    'slack': {icon: '💬', title: 'Connect Slack', fields: [
+        {name: 'webhook_url', label: 'Webhook URL', type: 'text', placeholder: 'https://hooks.slack.com/...'}
+    ]},
+    'gmail': {icon: '📧', title: 'Connect Email', fields: [
+        {name: 'smtp_host', label: 'SMTP Host', type: 'text', placeholder: 'smtp.gmail.com'},
+        {name: 'smtp_user', label: 'Email', type: 'email'},
+        {name: 'smtp_pass', label: 'App Password', type: 'password'}
+    ]},
+    'openai': {icon: '🤖', title: 'Connect OpenAI', fields: [
+        {name: 'api_key', label: 'API Key', type: 'password', placeholder: 'sk-...'}
+    ]},
+    'anthropic': {icon: '🧠', title: 'Connect Anthropic', fields: [
+        {name: 'api_key', label: 'API Key', type: 'password', placeholder: 'sk-ant-...'}
+    ]},
+    'google': {icon: '🔍', title: 'Connect Google AI', fields: [
+        {name: 'api_key', label: 'API Key', type: 'password'}
+    ]}
+};
+
+let currentIntegration = null;
+
+function setupIntegration(service) {
+    currentIntegration = service;
+    const config = integrationForms[service];
+
+    document.getElementById('int-modal-icon').textContent = config.icon;
+    document.getElementById('int-modal-title').textContent = config.title;
+
+    document.getElementById('int-modal-form').innerHTML = config.fields.map(f => `
+        <div class="form-group">
+            <label class="form-label">${f.label}</label>
+            <input type="${f.type}" class="form-input" name="${f.name}" placeholder="${f.placeholder || ''}">
+        </div>
+    `).join('');
+
+    document.getElementById('integration-modal').style.display = 'flex';
+}
+
+function closeIntModal() {
+    document.getElementById('integration-modal').style.display = 'none';
+}
+
+function saveIntegration() {
+    const form = document.getElementById('int-modal-form');
+    const data = {};
+    form.querySelectorAll('input').forEach(input => {
+        data[input.name] = input.value;
+    });
+
+    // For AI providers, save the API key via the backend
+    const aiProviders = ['openai', 'anthropic', 'google'];
+    if (aiProviders.includes(currentIntegration)) {
+        fetch('/api/set-api-key', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                provider: currentIntegration,
+                api_key: data.api_key
+            })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === 'success') {
+                updateStatus(currentIntegration, true);
+                closeIntModal();
+                showNotification(currentIntegration + ' connected successfully!', 'success');
+            } else {
+                showNotification('Failed to connect', 'error');
+            }
+        })
+        .catch(err => {
+            showNotification('Error connecting service', 'error');
+        });
+    } else {
+        // For other services, store in session storage for now
+        sessionStorage.setItem('zenthral_' + currentIntegration, JSON.stringify(data));
+        updateStatus(currentIntegration, true);
+        closeIntModal();
+        showNotification(currentIntegration + ' connected successfully!', 'success');
+    }
+}
+
+function updateStatus(service, connected) {
+    const statusEl = document.getElementById(service + '-status');
+    if (statusEl) {
+        statusEl.textContent = connected ? 'CONNECTED' : 'NOT CONNECTED';
+        statusEl.style.background = connected ? 'var(--accent-green)' : '';
+        statusEl.style.color = connected ? 'white' : '';
+    }
+}
+
+// Check status on load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/check-keys')
+        .then(res => res.json())
+        .then(data => {
+            if (data.configured) {
+                Object.keys(data.configured).forEach(provider => {
+                    if (data.configured[provider]) {
+                        updateStatus(provider, true);
+                    }
+                });
+            }
+        });
+});
+
+document.getElementById('integration-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeIntModal();
+});
+</script>
+{% endblock %}

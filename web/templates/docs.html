@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}Documentation{% endblock %}
+
+{% block content %}
+<div class="page-header" style="text-align: left;">
+    <div>
+        <h1 class="page-title" style="margin-bottom: 8px;">Documentation</h1>
+        <p class="page-subtitle">Learn how to use Zenthral effectively</p>
+    </div>
+</div>
+
+<div class="docs-layout">
+    <!-- Sidebar Navigation -->
+    <div class="docs-sidebar">
+        <div class="docs-nav-section">
+            <h4 class="docs-nav-title">Getting Started</h4>
+            <a href="#introduction" class="docs-nav-link active">Introduction</a>
+            <a href="#quickstart" class="docs-nav-link">Quick Start</a>
+            <a href="#installation" class="docs-nav-link">Installation</a>
+            <a href="#configuration" class="docs-nav-link">Configuration</a>
+        </div>
+
+        <div class="docs-nav-section">
+            <h4 class="docs-nav-title">Core Concepts</h4>
+            <a href="#agents" class="docs-nav-link">Agents</a>
+            <a href="#skills" class="docs-nav-link">Skills</a>
+            <a href="#sessions" class="docs-nav-link">Sessions</a>
+            <a href="#channels" class="docs-nav-link">Channels</a>
+        </div>
+
+        <div class="docs-nav-section">
+            <h4 class="docs-nav-title">Guides</h4>
+            <a href="#api-setup" class="docs-nav-link">API Setup</a>
+            <a href="#custom-agents" class="docs-nav-link">Custom Agents</a>
+            <a href="#automation" class="docs-nav-link">Automation</a>
+            <a href="#integrations" class="docs-nav-link">Integrations</a>
+        </div>
+
+        <div class="docs-nav-section">
+            <h4 class="docs-nav-title">API Reference</h4>
+            <a href="#rest-api" class="docs-nav-link">REST API</a>
+            <a href="#websockets" class="docs-nav-link">WebSockets</a>
+            <a href="#cli" class="docs-nav-link">CLI Commands</a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="docs-content">
+        <div class="docs-article" id="introduction">
+            <h2 class="docs-heading">Introduction</h2>
+            <p class="docs-text">
+                Zenthral is a powerful AI platform that provides pre-built agents, customizable skills, and flexible automation capabilities. Built on top of leading AI models like Claude and GPT, Zenthral makes it easy to integrate AI into your workflows.
+            </p>
+
+            <h3 class="docs-subheading">Key Features</h3>
+            <ul class="docs-list">
+                <li><strong>17 Pre-built Agents</strong> - Ready-to-use AI agents for common tasks</li>
+                <li><strong>Custom Skills</strong> - Extend functionality with custom Python skills</li>
+                <li><strong>Multiple Channels</strong> - CLI, Web, API, and more</li>
+                <li><strong>Session Management</strong> - Track conversations and usage</li>
+                <li><strong>Automation</strong> - Schedule recurring tasks with cron jobs</li>
+                <li><strong>Multi-Model Support</strong> - Use Claude, GPT, or your own API keys</li>
+            </ul>
+
+            <div class="docs-callout info">
+                <div class="callout-icon">💡</div>
+                <div class="callout-content">
+                    <strong>Tip:</strong> Start with the Quick Start guide to get up and running in under 5 minutes.
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-article" id="quickstart">
+            <h2 class="docs-heading">Quick Start</h2>
+            <p class="docs-text">Get Zenthral running in just a few steps:</p>
+
+            <h3 class="docs-subheading">1. Installation</h3>
+            <div class="docs-code-block">
+                <pre><code>git clone https://github.com/yourusername/zenthral.git
+cd zenthral
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt</code></pre>
+            </div>
+
+            <h3 class="docs-subheading">2. Configure API Keys</h3>
+            <p class="docs-text">Set up your AI provider credentials:</p>
+            <div class="docs-code-block">
+                <pre><code>export ANTHROPIC_API_KEY=your-key-here
+export OPENAI_API_KEY=your-key-here</code></pre>
+            </div>
+
+            <h3 class="docs-subheading">3. Start the Web Dashboard</h3>
+            <div class="docs-code-block">
+                <pre><code>cd web
+python3 app.py</code></pre>
+            </div>
+
+            <p class="docs-text">Visit <code>http://localhost:5001</code> to access the dashboard.</p>
+
+            <div class="docs-callout success">
+                <div class="callout-icon">✅</div>
+                <div class="callout-content">
+                    <strong>Success!</strong> You're now ready to start using Zenthral.
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-article" id="api-setup">
+            <h2 class="docs-heading">API Setup</h2>
+            <p class="docs-text">
+                Zenthral supports multiple AI providers. You can use our managed API (pay-as-you-go) or bring your own API keys.
+            </p>
+
+            <h3 class="docs-subheading">Managed API (Recommended)</h3>
+            <ul class="docs-list">
+                <li>No API keys required</li>
+                <li>Pay only for what you use</li>
+                <li>Automatic failover and redundancy</li>
+                <li>Volume discounts available</li>
+            </ul>
+
+            <h3 class="docs-subheading">Custom API Keys</h3>
+            <p class="docs-text">To use your own API keys:</p>
+            <ol class="docs-list">
+                <li>Navigate to <strong>Dashboard → AI Source</strong></li>
+                <li>Select <strong>Custom API</strong></li>
+                <li>Enter your Anthropic and/or OpenAI API keys</li>
+                <li>Click <strong>Continue to Setup</strong></li>
+            </ol>
+
+            <div class="docs-callout warning">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <strong>Important:</strong> API keys are stored in your browser session and never sent to our servers.
+                </div>
+            </div>
+        </div>
+
+        <div class="docs-article" id="agents">
+            <h2 class="docs-heading">Agents</h2>
+            <p class="docs-text">
+                Agents are specialized AI assistants designed for specific tasks. Each agent comes pre-configured with optimal prompts, tools, and settings for its domain.
+            </p>
+
+            <h3 class="docs-subheading">Available Agents</h3>
+            <div class="agent-list-docs">
+                <div class="agent-item-docs">
+                    <strong>💻 Code Agent</strong> - Write, review, and refactor code
+                </div>
+                <div class="agent-item-docs">
+                    <strong>🔍 Research Agent</strong> - Deep research and fact-checking
+                </div>
+                <div class="agent-item-docs">
+                    <strong>✍️ Writing Agent</strong> - Blog posts and documentation
+                </div>
+                <div class="agent-item-docs">
+                    <strong>📊 Data Analysis</strong> - Analyze datasets and visualizations
+                </div>
+            </div>
+
+            <p class="docs-text">See the <a href="#" class="docs-link">full agent list</a> for all 17 available agents.</p>
+        </div>
+
+        <div class="docs-article" id="support">
+            <h2 class="docs-heading">Getting Help</h2>
+            <p class="docs-text">Need assistance? We're here to help:</p>
+
+            <div class="support-grid">
+                <div class="support-card">
+                    <div class="support-icon">💬</div>
+                    <h4 class="support-title">Community</h4>
+                    <p class="support-desc">Join our Discord community</p>
+                    <a href="#" class="btn btn-secondary btn-sm">Join Discord</a>
+                </div>
+
+                <div class="support-card">
+                    <div class="support-icon">📧</div>
+                    <h4 class="support-title">Email Support</h4>
+                    <p class="support-desc">Get help via email</p>
+                    <a href="mailto:support@zenthral.ai" class="btn btn-secondary btn-sm">Email Us</a>
+                </div>
+
+                <div class="support-card">
+                    <div class="support-icon">📖</div>
+                    <h4 class="support-title">GitHub</h4>
+                    <p class="support-desc">Report issues and contribute</p>
+                    <a href="https://github.com/zenthral" class="btn btn-secondary btn-sm">View Repository</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.docs-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 40px;
+    max-width: 1400px;
+}
+
+.docs-sidebar {
+    position: sticky;
+    top: 40px;
+    height: fit-content;
+}
+
+.docs-nav-section {
+    margin-bottom: 32px;
+}
+
+.docs-nav-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.docs-nav-link {
+    display: block;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+}
+
+.docs-nav-link:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.docs-nav-link.active {
+    background-color: var(--bg-tertiary);
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+.docs-content {
+    max-width: 800px;
+}
+
+.docs-article {
+    margin-bottom: 48px;
+}
+
+.docs-heading {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.docs-subheading {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 32px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.docs-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+
+.docs-list {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+.docs-list li {
+    margin-bottom: 8px;
+}
+
+.docs-code-block {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+.docs-code-block pre {
+    margin: 0;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.docs-code-block code {
+    background: none;
+    padding: 0;
+}
+
+.docs-callout {
+    display: flex;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 24px 0;
+}
+
+.docs-callout.info {
+    background-color: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.docs-callout.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.docs-callout.warning {
+    background-color: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.callout-icon {
+    font-size: 24px;
+}
+
+.callout-content {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.docs-link {
+    color: var(--accent-primary);
+    text-decoration: none;
+}
+
+.docs-link:hover {
+    text-decoration: underline;
+}
+
+.agent-list-docs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.agent-item-docs {
+    padding: 12px 16px;
+    background-color: var(--bg-tertiary);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+}
+
+.support-card {
+    padding: 24px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.support-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.support-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.support-desc {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+}
+</style>
+{% endblock %}

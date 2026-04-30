@@ -1,6 +1,23 @@
-# Zenthral AI Agents
+# Zenthral AI Platform
 
-Complete collection of **AI-powered automation agents** with **real API integrations** for business automation.
+Complete **AI-powered automation platform** with **real API integrations**, **web dashboard**, and **17 ready-to-use agents**.
+
+## 🌐 Web Dashboard (NEW!)
+
+MyClaw.ai-style web interface for managing your AI agents:
+
+```bash
+cd web
+pip install -r requirements.txt
+python app.py
+```
+
+Open **http://localhost:5000** and enjoy:
+- Chat with Claude/GPT-4 (real AI)
+- 14 AI skills with visual interface
+- Connect APIs: Stripe, Shopify, Twilio, Slack
+- Track token usage & costs
+- Dark theme professional UI
 
 ## ✨ Real Integrations
 
@@ -83,13 +100,13 @@ Install via Zenthral's skill system:
 
 ```bash
 # Search for skills
-openclaw skills search "finance"
+zenthral skills search "finance"
 
 # Install a skill
-openclaw skills install finance-agents
+zenthral skills install finance-agents
 
 # Run agent
-openclaw run invoice-agent --client "Acme Corp" --hours 40 --rate 150
+zenthral run invoice-agent --client "Acme Corp" --hours 40 --rate 150
 ```
 
 ---
@@ -294,7 +311,7 @@ python3 scripts/campaign_agent.py --product "AI CRM" --budget 50000
 
 ## 💬 Chat Interface Features
 
-The chat interface (`industries/openclaw_chat.py`) provides:
+The chat interface (`industries/zenthral_chat.py`) provides:
 
 - ✅ **Natural language understanding** - Just describe what you want
 - ✅ **Automatic agent detection** - Figures out which agent to use
@@ -319,10 +336,17 @@ marketing, campaign, ads             → Marketing agent
 ## 📁 Repository Structure
 
 ```
-openclawclone/
+zenthral/
 ├── README.md                         # This file
+├── web/                              # Web Dashboard (NEW!)
+│   ├── app.py                       # Flask application
+│   ├── requirements.txt             # Python dependencies
+│   ├── static/css/style.css         # Dark theme styles
+│   ├── static/js/app.js             # Frontend JavaScript
+│   └── templates/                   # HTML templates
+│       ├── base.html, chat.html, skills.html, etc.
 ├── industries/
-│   ├── openclaw_chat.py             # Chat interface
+│   ├── zenthral_chat.py             # Chat interface
 │   ├── README.md                     # Industry agents overview
 │   │
 │   ├── finance/
@@ -405,7 +429,7 @@ All skills follow Zenthral's installation format:
 - ✅ Proper `SKILL.md` frontmatter with metadata
 - ✅ Installation instructions via `uv` package manager
 - ✅ Requirements and dependencies specified
-- ✅ Ready to publish to ClawHub registry
+- ✅ Ready to publish to Zenthral Hub registry
 
 ### JSON Output
 
@@ -444,15 +468,15 @@ All agents return structured JSON for easy integration:
 ### Clone Repository
 
 ```bash
-git clone https://github.com/faith441/openclawclone.git
-cd openclawclone
+git clone https://github.com/faith441/zenthralclone.git
+cd zenthralclone
 ```
 
 ### Run Chat Interface
 
 ```bash
 cd industries
-python3 openclaw_chat.py
+python3 zenthral_chat.py
 ```
 
 ### Run Individual Agents
@@ -495,13 +519,15 @@ All agents follow the same pattern. To create a new agent:
 
 | Feature | Count | Status |
 |---------|-------|--------|
-| **Working Agents** | 7 | ✅ All tested |
+| **Web Dashboard** | 1 | ✅ Full featured |
+| **Working Agents** | 17 | ✅ All tested |
 | **SKILL.md Files** | 9 | ✅ Zenthral compatible |
-| **Chat Interface** | 1 | ✅ Natural language |
+| **Chat Interface** | 2 | ✅ CLI + Web |
 | **Core Skills** | 87 | ✅ Documented |
 | **Industries** | 8 | ✅ Complete |
+| **API Integrations** | 8 | ✅ Real services |
 
-**Total: 127+ skills and agents documented, with 7 fully functional agents!**
+**Total: 17 AI agents with web dashboard and real API integrations!**
 
 ---
 
@@ -525,16 +551,25 @@ See LICENSE file in the repository.
 
 ## 🔗 Links
 
-- **GitHub:** https://github.com/faith441/openclawclone
-- **Issues:** https://github.com/faith441/openclawclone/issues
+- **GitHub:** https://github.com/faith441/zenthralclone
+- **Issues:** https://github.com/faith441/zenthralclone/issues
 
 ---
 
 ## 🎉 Get Started Now!
 
+### Option 1: Web Dashboard (Recommended)
 ```bash
-cd industries
-python3 openclaw_chat.py
+cd web
+pip install -r requirements.txt
+python app.py
+# Open http://localhost:5000
 ```
 
-**Then just start chatting with your AI agents!** 🚀
+### Option 2: CLI Chat
+```bash
+cd industries
+python3 zenthral_interactive.py
+```
+
+**Start automating with AI today!** 🚀

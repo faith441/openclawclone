@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenthral - {% block title %}AI Platform{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <span class="logo-text">Zenthral</span>
+                </div>
+            </div>
+
+            <div class="instance-selector">
+                <div class="instance-info">
+                    <span class="instance-icon">+</span>
+                    <div class="instance-text">
+                        <span class="instance-name">No Instance</span>
+                        <span class="instance-sub">Create your first AI</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('chat') }}" class="nav-item {% if request.endpoint == 'chat' %}active{% endif %}">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-text">Chat</span>
+                </a>
+                <a href="{{ url_for('integration') }}" class="nav-item {% if request.endpoint == 'integration' %}active{% endif %}">
+                    <span class="nav-icon">🔗</span>
+                    <span class="nav-text">Integration</span>
+                </a>
+                <a href="{{ url_for('usage') }}" class="nav-item {% if request.endpoint == 'usage' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Usage</span>
+                </a>
+                <a href="{{ url_for('ai_models') }}" class="nav-item {% if request.endpoint == 'ai_models' %}active{% endif %}">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">AI Models</span>
+                </a>
+                <a href="{{ url_for('agents') }}" class="nav-item {% if request.endpoint == 'agents' %}active{% endif %}">
+                    <span class="nav-icon">🤖</span>
+                    <span class="nav-text">Agents</span>
+                </a>
+                <a href="{{ url_for('skills') }}" class="nav-item {% if request.endpoint == 'skills' %}active{% endif %}">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Skills</span>
+                </a>
+                <a href="{{ url_for('create_automation') }}" class="nav-item {% if request.endpoint == 'create_automation' %}active{% endif %}">
+                    <span class="nav-icon">✨</span>
+                    <span class="nav-text">Create Automation</span>
+                </a>
+                <a href="{{ url_for('settings') }}" class="nav-item {% if request.endpoint == 'settings' %}active{% endif %}">
+                    <span class="nav-icon">🛠️</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item setup-credits">
+                    <span class="nav-icon">💳</span>
+                    <span class="nav-text">Set Up AI Credits</span>
+                </a>
+                <div class="refer-earn">
+                    <span class="new-badge">NEW</span>
+                    <div class="refer-content">
+                        <span class="refer-icon">🎁</span>
+                        <div class="refer-text">
+                            <span class="refer-title">Refer & Earn</span>
+                            <span class="refer-sub">Unlock $1,000 Credits</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-profile">
+                    <div class="user-avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">User</span>
+                        <span class="user-email">user@example.com</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contextual Sidebar -->
+        <aside class="contextual-sidebar">
+            <div class="contextual-header">
+                <div class="instance-badge">
+                    <span class="instance-badge-icon">⚡</span>
+                    <span class="instance-badge-name">Zenthral</span>
+                </div>
+            </div>
+
+            <div class="contextual-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">CHAT</div>
+                    <a href="{{ url_for('chat') }}" class="contextual-nav-item {% if request.endpoint == 'chat' %}active{% endif %}">
+                        <span class="contextual-nav-text">Chat</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">CONTROL</div>
+                    <a href="{{ url_for('overview') }}" class="contextual-nav-item {% if request.endpoint == 'overview' %}active{% endif %}">
+                        <span class="contextual-nav-text">Overview</span>
+                    </a>
+                    <a href="{{ url_for('channels') }}" class="contextual-nav-item {% if request.endpoint == 'channels' %}active{% endif %}">
+                        <span class="contextual-nav-text">Channels</span>
+                    </a>
+                    <a href="{{ url_for('instances') }}" class="contextual-nav-item {% if request.endpoint == 'instances' %}active{% endif %}">
+                        <span class="contextual-nav-text">Instances</span>
+                    </a>
+                    <a href="{{ url_for('sessions') }}" class="contextual-nav-item {% if request.endpoint == 'sessions' %}active{% endif %}">
+                        <span class="contextual-nav-text">Sessions</span>
+                    </a>
+                    <a href="{{ url_for('usage') }}" class="contextual-nav-item {% if request.endpoint == 'usage' %}active{% endif %}">
+                        <span class="contextual-nav-text">Usage</span>
+                    </a>
+                    <a href="{{ url_for('cron') }}" class="contextual-nav-item {% if request.endpoint == 'cron' %}active{% endif %}">
+                        <span class="contextual-nav-text">Cron Jobs</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">AGENT</div>
+                    <a href="{{ url_for('agents') }}" class="contextual-nav-item {% if request.endpoint == 'agents' %}active{% endif %}">
+                        <span class="contextual-nav-text">Agents</span>
+                    </a>
+                    <a href="{{ url_for('skills') }}" class="contextual-nav-item {% if request.endpoint == 'skills' %}active{% endif %}">
+                        <span class="contextual-nav-text">Skills</span>
+                    </a>
+                    <a href="{{ url_for('docs') }}" class="contextual-nav-item {% if request.endpoint == 'docs' %}active{% endif %}">
+                        <span class="contextual-nav-text">Docs</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="contextual-footer">
+                <div class="version-info">
+                    <span class="version-status"></span>
+                    <span class="version-text">v2026.4.28</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

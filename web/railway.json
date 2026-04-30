@@ -1,0 +1,39 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "gunicorn app:app",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  },
+  "services": [
+    {
+      "name": "zenthral-backend",
+      "env": {
+        "SECRET_KEY": {
+          "description": "Flask secret key for sessions",
+          "generator": {
+            "type": "secret"
+          }
+        },
+        "JWT_SECRET_KEY": {
+          "description": "JWT secret key for authentication",
+          "generator": {
+            "type": "secret"
+          }
+        },
+        "FLASK_ENV": {
+          "value": "production"
+        }
+      }
+    }
+  ],
+  "plugins": [
+    {
+      "name": "postgresql",
+      "plan": "starter"
+    }
+  ]
+}

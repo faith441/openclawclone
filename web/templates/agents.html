@@ -1,0 +1,535 @@
+{% extends "base.html" %}
+
+{% block title %}Agents{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Agents</h1>
+    <p class="page-subtitle">Workspaces, tools, identities.</p>
+</div>
+
+<!-- Workspace Selector -->
+<div style="margin-bottom: 24px;">
+    <select class="form-input" style="max-width: 300px;" id="workspaceSelector">
+        <option value="main">main (default)</option>
+    </select>
+    <button class="btn btn-secondary" style="margin-left: 12px;" onclick="refreshWorkspace()">
+        <span>🔄</span> Refresh
+    </button>
+</div>
+
+<!-- Tabs -->
+<div style="display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border);">
+    <button class="tab-btn" data-tab="overview" onclick="switchTab('overview')">Overview</button>
+    <button class="tab-btn active" data-tab="files" onclick="switchTab('files')">
+        Files <span class="tab-badge" id="fileCount">8</span>
+    </button>
+    <button class="tab-btn" data-tab="tools" onclick="switchTab('tools')">Tools</button>
+    <button class="tab-btn" data-tab="skills" onclick="switchTab('skills')">Skills</button>
+    <button class="tab-btn" data-tab="channels" onclick="switchTab('channels')">
+        Channels <span class="tab-badge">1</span>
+    </button>
+    <button class="tab-btn" data-tab="cron" onclick="switchTab('cron')">Cron Jobs</button>
+</div>
+
+<!-- Overview Tab -->
+<div id="tab-overview" class="tab-content" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Agent Overview</span>
+        </div>
+        <div style="padding: 20px;">
+            <h3 style="margin-bottom: 12px;">Workspace Information</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                Bootstrap persona, identity, and tool guidance.
+            </p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div class="stat-card">
+                    <div style="font-size: 32px; font-weight: bold; color: var(--primary);">8</div>
+                    <div style="color: var(--text-secondary); font-size: 14px;">Core Files</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 32px; font-weight: bold; color: var(--primary);">15</div>
+                    <div style="color: var(--text-secondary); font-size: 14px;">Available Agents</div>
+                </div>
+                <div class="stat-card">
+                    <div style="font-size: 32px; font-weight: bold; color: var(--primary);" id="installedCount">0</div>
+                    <div style="color: var(--text-secondary); font-size: 14px;">Installed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Files Tab -->
+<div id="tab-files" class="tab-content">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Core Files</span>
+            <button class="btn btn-secondary" style="margin-left: auto;" onclick="refreshFiles()">
+                <span>🔄</span> Refresh
+            </button>
+        </div>
+
+        <p style="padding: 0 20px; color: var(--text-secondary); margin-bottom: 16px;">
+            Bootstrap persona, identity, and tool guidance.
+        </p>
+
+        <p style="padding: 0 20px; color: var(--text-secondary); font-family: monospace; font-size: 13px; margin-bottom: 20px;">
+            Workspace: <span id="workspacePath">/home/zenthral/workspace</span>
+        </p>
+
+        <!-- File Type Tabs -->
+        <div style="display: flex; gap: 8px; padding: 0 20px; margin-bottom: 20px; flex-wrap: wrap;">
+            <button class="file-tab active" data-file="agents" onclick="switchFile('agents')">AGENTS</button>
+            <button class="file-tab" data-file="soul" onclick="switchFile('soul')">SOUL</button>
+            <button class="file-tab" data-file="tools" onclick="switchFile('tools')">TOOLS</button>
+            <button class="file-tab" data-file="identity" onclick="switchFile('identity')">IDENTITY</button>
+            <button class="file-tab" data-file="user" onclick="switchFile('user')">USER</button>
+            <button class="file-tab" data-file="heartbeat" onclick="switchFile('heartbeat')">HEARTBEAT</button>
+            <button class="file-tab file-tab-bootstrap" data-file="bootstrap" onclick="switchFile('bootstrap')">BOOTSTRAP</button>
+            <button class="file-tab file-tab-warning" data-file="memory" onclick="switchFile('memory')">
+                MEMORY <span style="font-size: 10px;">MISSING</span>
+            </button>
+        </div>
+
+        <!-- File Path -->
+        <div style="padding: 0 20px; margin-bottom: 16px;">
+            <div style="background: var(--bg-secondary); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 13px; color: var(--text-secondary);">
+                <span id="currentFilePath">/workspace/AGENTS.md</span>
+            </div>
+        </div>
+
+        <!-- File Editor -->
+        <div style="padding: 0 20px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label style="font-weight: 600; color: var(--text-primary);">Content</label>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary" onclick="previewFile()">
+                        <span>👁️</span> Preview
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetFile()">Reset</button>
+                    <button class="btn btn-primary" onclick="saveFile()">Save</button>
+                </div>
+            </div>
+
+            <textarea
+                id="fileContent"
+                class="form-input"
+                style="font-family: monospace; min-height: 400px; resize: vertical;"
+                placeholder="File content will appear here..."
+            ></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- Tools Tab -->
+<div id="tab-tools" class="tab-content" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Available Tools</span>
+        </div>
+        <div style="padding: 20px;">
+            <p style="color: var(--text-secondary);">Tool configurations will be displayed here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Skills Tab -->
+<div id="tab-skills" class="tab-content" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Agent Skills</span>
+        </div>
+        <div style="padding: 20px;">
+            <p style="color: var(--text-secondary);">
+                Skills are configured in the Skills section.
+                <a href="{{ url_for('skills') }}" style="color: var(--primary);">Go to Skills →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Channels Tab -->
+<div id="tab-channels" class="tab-content" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Communication Channels</span>
+        </div>
+        <div style="padding: 20px;">
+            <p style="color: var(--text-secondary);">Channel configurations will be displayed here.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Cron Jobs Tab -->
+<div id="tab-cron" class="tab-content" style="display: none;">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Scheduled Jobs</span>
+        </div>
+        <div style="padding: 20px;">
+            <p style="color: var(--text-secondary);">Cron job configurations will be displayed here.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.tab-btn {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 12px 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.tab-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    font-size: 11px;
+    margin-left: 6px;
+}
+
+.tab-content {
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.file-tab {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.file-tab:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.file-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.file-tab-bootstrap.active {
+    background: #ef4444;
+    border-color: #dc2626;
+}
+
+.file-tab-warning {
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fbbf24;
+}
+
+.stat-card {
+    background: var(--bg-secondary);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+</style>
+
+<script>
+const fileTemplates = {
+    agents: `# AGENTS Configuration
+
+## Installed Agents
+
+This file tracks all installed agents and their configurations.
+
+### Format:
+- agent_id: unique identifier
+- name: agent name
+- enabled: true/false
+- config: agent-specific configuration
+
+---
+
+// Agent configurations will be loaded here
+`,
+    soul: `# SOUL
+
+The core personality and behavioral guidelines for the AI agent.
+
+## Personality Traits:
+- Professional
+- Helpful
+- Efficient
+- Knowledgeable
+
+## Communication Style:
+- Clear and concise
+- Friendly but professional
+- Task-oriented
+
+## Core Directives:
+1. Assist users efficiently
+2. Maintain security and privacy
+3. Provide accurate information
+4. Learn from interactions
+`,
+    tools: `# TOOLS Configuration
+
+Available tools and integrations for the agent.
+
+## Available Tools:
+- Email Sender
+- SMS Sender
+- PDF Generator
+- Web Scraper
+- Image Optimizer
+- Data Converter
+- Slack Notifier
+
+## Tool Guidelines:
+- Always validate inputs
+- Handle errors gracefully
+- Log all operations
+`,
+    identity: `# IDENTITY
+
+Agent identity and credentials.
+
+## Agent Information:
+- Name: Zenthral AI
+- Version: 1.0.0
+- Environment: Production
+
+## API Credentials:
+(Stored securely - not displayed here)
+
+## Capabilities:
+- Multi-tenant support
+- Agent marketplace
+- Automated workflows
+- Integration with external services
+`,
+    user: `# USER Configuration
+
+User-specific settings and preferences.
+
+## Default User Settings:
+- Timezone: UTC
+- Language: English
+- Theme: System Default
+
+## Notifications:
+- Email: Enabled
+- SMS: Disabled
+- In-app: Enabled
+
+## Privacy:
+- Data retention: 90 days
+- Analytics: Enabled
+- Third-party sharing: Disabled
+`,
+    heartbeat: `# HEARTBEAT
+
+System health monitoring and status checks.
+
+## Health Checks:
+- Database: ✓ Connected
+- API Services: ✓ Online
+- Background Jobs: ✓ Running
+
+## Last Heartbeat:
+${new Date().toISOString()}
+
+## Metrics:
+- Uptime: 99.9%
+- Response Time: <100ms
+- Active Users: 0
+`,
+    bootstrap: `# BOOTSTRAP
+
+Initial configuration and setup instructions.
+
+## Setup Steps:
+1. ✓ Database initialized
+2. ✓ Authentication configured
+3. ✓ Agent catalog seeded
+4. ✓ API endpoints configured
+
+## Next Steps:
+- Configure integrations
+- Set up notifications
+- Customize agent settings
+- Deploy to production
+
+## Environment:
+- Platform: Zenthral AI
+- Version: 1.0.0
+- Status: Ready
+`,
+    memory: `# MEMORY
+
+(This file is missing - create it to store agent memory and conversation history)
+
+## Purpose:
+Store conversation context, learned patterns, and user preferences.
+
+## Structure:
+- Short-term memory: Recent conversations
+- Long-term memory: User preferences and patterns
+- Context windows: Per-session storage
+`
+};
+
+let currentFile = 'agents';
+let originalContent = '';
+
+function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+    // Update content
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    document.getElementById(`tab-${tabName}`).style.display = 'block';
+
+    // Load initial file content if switching to files tab
+    if (tabName === 'files' && currentFile === 'agents') {
+        loadFile('agents');
+    }
+}
+
+function switchFile(fileName) {
+    currentFile = fileName;
+
+    // Update file tabs
+    document.querySelectorAll('.file-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`[data-file="${fileName}"]`).classList.add('active');
+
+    // Update file path
+    document.getElementById('currentFilePath').textContent =
+        `/workspace/${fileName.toUpperCase()}.md`;
+
+    // Load file content
+    loadFile(fileName);
+}
+
+function loadFile(fileName) {
+    const content = fileTemplates[fileName] || '// File content not available';
+    originalContent = content;
+    document.getElementById('fileContent').value = content;
+}
+
+function saveFile() {
+    const content = document.getElementById('fileContent').value;
+
+    // Here you would normally save to the backend
+    // For now, just show a success message
+
+    // Update original content
+    originalContent = content;
+
+    // Show notification
+    showNotification(`✓ Saved ${currentFile.toUpperCase()}.md`, 'success');
+}
+
+function resetFile() {
+    if (confirm('Reset file to last saved version?')) {
+        document.getElementById('fileContent').value = originalContent;
+    }
+}
+
+function previewFile() {
+    const content = document.getElementById('fileContent').value;
+
+    // Open preview in new window or modal
+    const preview = window.open('', 'Preview', 'width=800,height=600');
+    preview.document.write(`
+        <html>
+            <head>
+                <title>Preview: ${currentFile.toUpperCase()}.md</title>
+                <style>
+                    body { font-family: system-ui; padding: 40px; max-width: 800px; margin: 0 auto; }
+                    pre { background: #f5f5f5; padding: 20px; border-radius: 6px; overflow-x: auto; }
+                </style>
+            </head>
+            <body>
+                <h1>${currentFile.toUpperCase()}.md</h1>
+                <pre>${content}</pre>
+            </body>
+        </html>
+    `);
+}
+
+function refreshWorkspace() {
+    location.reload();
+}
+
+function refreshFiles() {
+    loadFile(currentFile);
+    showNotification('✓ Files refreshed', 'success');
+}
+
+// Load installed agent count
+async function loadInstalledCount() {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    try {
+        const response = await fetch('/api/v1/agents/installed', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('installedCount').textContent = data.installed_agents.length;
+        }
+    } catch (err) {
+        console.log('Could not load installed agents');
+    }
+}
+
+function showNotification(message, type) {
+    // Use existing notification system if available
+    if (window.showNotification) {
+        window.showNotification(message, type);
+    } else {
+        alert(message);
+    }
+}
+
+// Initialize
+window.onload = () => {
+    loadFile('agents');
+    loadInstalledCount();
+};
+</script>
+
+{% endblock %}
