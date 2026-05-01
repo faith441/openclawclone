@@ -61,6 +61,34 @@ CREATE TABLE public.api_keys (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
+-- User AI Keys table (for cloud execution mode - encrypted storage)
+CREATE TABLE public.user_ai_keys (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    provider VARCHAR(50) NOT NULL, -- 'openai', 'anthropic', 'google', 'groq'
+    encrypted_key TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT true,
+    last_tested TIMESTAMP,
+    test_status VARCHAR(20), -- 'valid', 'invalid', 'not_tested'
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, provider)
+);
+
+-- Installed Skills table (tracks which skills users have installed)
+CREATE TABLE public.installed_skills (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    skill_id VARCHAR NOT NULL,
+    skill_name VARCHAR NOT NULL,
+    execution_mode VARCHAR(20) DEFAULT 'cloud', -- 'cloud' or 'local'
+    is_enabled BOOLEAN DEFAULT true,
+    config JSONB,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(user_id, skill_id)
+);
+
 -- Row Level Security (RLS) Policies
 
 -- Enable RLS
@@ -69,6 +97,8 @@ ALTER TABLE public.workspaces ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.workflows ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.executions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_ai_keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.installed_skills ENABLE ROW LEVEL SECURITY;
 
 -- User profiles: users can only see their own
 CREATE POLICY "Users can view own profile"
@@ -175,12 +205,50 @@ CREATE POLICY "Users can create API keys"
         )
     );
 
+-- User AI Keys: users can only see their own AI keys
+CREATE POLICY "Users can view own AI keys"
+    ON public.user_ai_keys FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own AI keys"
+    ON public.user_ai_keys FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own AI keys"
+    ON public.user_ai_keys FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own AI keys"
+    ON public.user_ai_keys FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- Installed Skills: users can only see their own installed skills
+CREATE POLICY "Users can view own installed skills"
+    ON public.installed_skills FOR SELECT
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can install skills"
+    ON public.installed_skills FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own installed skills"
+    ON public.installed_skills FOR UPDATE
+    USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own installed skills"
+    ON public.installed_skills FOR DELETE
+    USING (auth.uid() = user_id);
+
 -- Indexes for better performance
 CREATE INDEX idx_workspaces_owner ON public.workspaces(owner_id);
 CREATE INDEX idx_workflows_workspace ON public.workflows(workspace_id);
 CREATE INDEX idx_executions_workflow ON public.executions(workflow_id);
 CREATE INDEX idx_executions_workspace ON public.executions(workspace_id);
 CREATE INDEX idx_api_keys_workspace ON public.api_keys(workspace_id);
+CREATE INDEX idx_user_ai_keys_user ON public.user_ai_keys(user_id);
+CREATE INDEX idx_user_ai_keys_provider ON public.user_ai_keys(user_id, provider);
+CREATE INDEX idx_installed_skills_user ON public.installed_skills(user_id);
+CREATE INDEX idx_installed_skills_skill ON public.installed_skills(skill_id);
 
 -- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -199,4 +267,10 @@ CREATE TRIGGER update_workspaces_updated_at BEFORE UPDATE ON public.workspaces
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_workflows_updated_at BEFORE UPDATE ON public.workflows
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_ai_keys_updated_at BEFORE UPDATE ON public.user_ai_keys
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_installed_skills_updated_at BEFORE UPDATE ON public.installed_skills
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
